@@ -3,15 +3,16 @@
 //
 
 #include "gnklog.h"
+#include "LogManager.h"
 
 using namespace gnilk;
 
 void Logger::Initialize() {
-
+    LogManager::Instance().Initialize();
 }
 
 // New interface - returns shared ptr...
-ILogger::Ref GetLogger(const std::string &name) {
+ILogger::Ref Logger::GetLogger(const std::string &name) {
     auto instance = LogManager::Instance().GetOrAddLogInstance(name);
     if (instance == nullptr) {
         return nullptr;
@@ -26,25 +27,6 @@ ILogger* Logger::GetLoggerPtr(const std::string &name) {
         return nullptr;
     }
     return instance.get();
-}
-
-
-LogManager &LogManager::Instance() {
-    static LogManager glbManager;
-    return glbManager;
-}
-
-LogInstance::Ref LogManager::GetOrAddLogInstance(const std::string &name) {
-    if (logInstances.find(name) != logInstances.end()) {
-        return logInstances[name];
-    }
-    // Create the writer and the instance...
-    auto writer = LogWriter::Create(name);
-    auto instance = LogInstance::Create(name, writer);
-
-    logInstances[name] = instance;
-    return instance;
-    return nullptr;
 }
 
 
