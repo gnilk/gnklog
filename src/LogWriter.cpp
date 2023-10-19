@@ -2,6 +2,15 @@
 // Created by gnilk on 19.10.23.
 //
 
+//
+// !! Consider renaming this -> put it directly to ILogger??? !!
+//
+// This is the front-facing instance under the ILogger interface.
+// When you call 'Debug' on this an event is created and pushed to a pipe.
+//
+// Then LogManager::SendToSinks is invoked which will determine where to send it and so forth..
+//
+
 #include <stdarg.h>
 #include <optional>
 

@@ -26,12 +26,11 @@ DLL_EXPORT int test_logger_exit(ITesting *t) {
     return kTR_Pass;
 }
 DLL_EXPORT int test_logger_debug(ITesting *t) {
-    auto str = std::string("dummy");
-    printf("str: %s\n", str.c_str());
-
 
     auto logger = Logger::GetLogger("test");
 
     logger->Debug("mamma: %d, %s", 4, "world");
+    logger->Debug("Some more fascinating strings");
+    logger->Debug("Data is debug");
     return kTR_Pass;
 }

@@ -30,6 +30,7 @@ namespace gnilk {
         kCustom   = 600,
     };
 
+    // The actual 'logger' is implemented by 'LogWriter' - very stupid, indeed...
     class ILogger {
     public:
         using Ref = std::shared_ptr<ILogger>;

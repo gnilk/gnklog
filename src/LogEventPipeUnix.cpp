@@ -2,14 +2,12 @@
 // Created by gnilk on 19.10.23.
 //
 
-#include <iostream>
-#include <string>
+//
+// Event serialization using plain pipes
+//
+
 #include <cstdio>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <cstring>
-#include <filesystem>
 #include <poll.h>
 
 #include "LogEventPipeUnix.h"

@@ -2,6 +2,10 @@
 // Created by gnilk on 19.10.23.
 //
 
+//
+// Event serialization using fifo's - not sure about the portability here - will have to test on macOS at least
+//
+
 #include <string>
 #include <filesystem>
 #include <unistd.h>

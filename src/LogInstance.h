@@ -25,6 +25,7 @@ namespace gnilk {
         const std::string &GetName() {
             return logName;
         }
+
         ILogger::Ref GetLogger() {
             return logger;
         }

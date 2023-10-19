@@ -16,7 +16,7 @@ option(LOG_HAVE_NEWLINE "Append newline to strings" ON)
 # dummy library to hold baseline compile options for multiple targets..
 add_library(options INTERFACE)
 
-if(LOGGER_HAVE_NEWLINE)
+if(LOG_HAVE_NEWLINE)
     target_compile_definitions(options INTERFACE LOG_HAVE_NEWLINE)
 endif()
 

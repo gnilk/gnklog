@@ -15,6 +15,9 @@
 
 namespace gnilk {
 
+    // This mimics to some extent the old logger
+    // All 'core' functionality has been moved around.
+    // The 'LogManager' (lack of better name for now) is the hidden internal core - does all the heavy lifting.
     class Logger {
     public:
         Logger() = default;

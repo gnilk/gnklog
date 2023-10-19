@@ -2,6 +2,10 @@
 // Created by gnilk on 19.10.23.
 //
 
+//
+// simple stdout printf console sink...
+//
+
 #include <unistd.h>
 #include <stdio.h>
 #include "LogConsoleSink.h"

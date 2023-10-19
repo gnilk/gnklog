@@ -2,6 +2,10 @@
 // Created by gnilk on 19.10.23.
 //
 
+//
+// The LogEvent class encapsulate the internals of what happens between a call to 'logger->Debug("hello")' and the console
+//
+
 #include <string.h>
 
 #include "LogEvent.h"
@@ -10,7 +14,10 @@
 
 using namespace gnilk;
 
-
+//
+// This will create the complete report string, cache it and return it.
+// In case there are several sinks - ok, I have never used more than two - but anyway - I like the ambition...
+//
 size_t LogEvent::ToString(std::string &strOut) {
     if (reportString.empty()) {
         ComposeReportString();
@@ -20,6 +27,9 @@ size_t LogEvent::ToString(std::string &strOut) {
     return strOut.size();
 }
 
+//
+// fancy lookup table...
+//
 static const std::string logLevelNames[] = {
     "NONE",             // 0
     "DEBUG",            // 1
@@ -29,6 +39,9 @@ static const std::string logLevelNames[] = {
     "CRITICAL"          // 5
 };
 
+//
+// helper to fetch the right name from the level
+//
 static const std::string &MessageClassNameFromInt(LogLevel level) {
     if (level < (int) kDebug) {
         return logLevelNames[0];
@@ -44,6 +57,9 @@ static const std::string &MessageClassNameFromInt(LogLevel level) {
     return logLevelNames[5];
 }
 
+//
+// Compose a report string from an event
+//
 void LogEvent::ComposeReportString() {
     char header[LOG_MAX_NAME_LEN + 64];
     char sTime[32];
@@ -74,15 +90,15 @@ void LogEvent::ComposeReportString() {
     reportString = header;
     reportString += msgString;
 
-    // FIXME: CRLN???
 #ifdef LOG_HAVE_NEWLINE
     reportString += "\n";
 #endif
 }
 
-
-// -------------------------------------------
-// LogEvent
+//
+// Writes a log event to the pipe
+// Called by LogWriter::Debug BEFORE the string is formatted
+//
 size_t LogEvent::Write() {
 
     LogEvent::EventStreamMessage msg;
@@ -107,7 +123,9 @@ size_t LogEvent::Write() {
     return res;
 }
 
-// Read a log event from the pipe
+//
+// Reads a log event from the pipe
+//
 size_t LogEvent::Read() {
     LogEvent::EventStreamMessage msg;
     auto &eventPipe = LogManager::Instance().GetLogEventPipe();
@@ -127,13 +145,12 @@ size_t LogEvent::Read() {
         return 0;
     }
 
-    printf("Reading Event, sz=%d\n", res);
-    printf("  sender: %s\n", msg.sender);
-    printf("  msg: %s\n", msgString.c_str());
-
     return res;
 }
 
+//
+// Reads the actual formatted string off the pipe..
+//
 size_t LogEvent::ReadMsgString() {
 
     auto &eventPipe = LogManager::Instance().GetLogEventPipe();

@@ -41,6 +41,7 @@ namespace gnilk {
     protected:
         bool isInitialized = false;
 
+
         LogEventPipeUnix eventPipe;
 //        LogEventFifoUnix eventPipe;
 
