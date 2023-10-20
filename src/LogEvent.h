@@ -46,6 +46,8 @@ namespace gnilk {
     protected:
         size_t Write();     // FIXME: Rename -> WriteIPC    ??
         size_t Read();      // FIXME: Rename -> ReadIPC     ??
+        size_t WriteMsgString(const char *str);
+        size_t WriteMsgString(const std::string &str);
         size_t ReadMsgString();
 
     private:

@@ -157,6 +157,21 @@ size_t LogEvent::Read() {
     return res;
 }
 
+size_t LogEvent::WriteMsgString(const char *str) {
+    auto &eventPipe = LogManager::Instance().GetLogEventPipe();
+    auto result = fprintf(eventPipe.GetWriteStream(), "%s", str);
+    fflush(eventPipe.GetWriteStream());
+    return result;
+}
+
+size_t LogEvent::WriteMsgString(const std::string &str) {
+    auto &eventPipe = LogManager::Instance().GetLogEventPipe();
+    auto result = fprintf(eventPipe.GetWriteStream(), "%s", str.c_str());
+    fflush(eventPipe.GetWriteStream());
+    return result;
+}
+
+
 //
 // Reads the actual formatted string off the pipe..
 //
