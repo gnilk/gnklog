@@ -20,6 +20,14 @@ if(LOG_HAVE_NEWLINE)
     target_compile_definitions(options INTERFACE LOG_HAVE_NEWLINE)
 endif()
 
+#
+# Compile the bundled version of fmt
+#
+list(APPEND fmt_src src/ext/fmt/format.cc)
+add_library(fmt STATIC ${fmt_src})
+target_compile_options(fmt PUBLIC -fPIC)
+target_include_directories(fmt PUBLIC src/ext)
+
 
 
 # main source for logger library
@@ -44,10 +52,10 @@ add_library(gnklog_utest SHARED ${src} ${src_utest})
 add_library(gnklog STATIC ${src})
 
 target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow)
-target_include_directories(gnklog PUBLIC src)
-target_link_libraries(gnklog options)
+target_include_directories(gnklog PUBLIC src src/ext)
+target_link_libraries(gnklog options fmt)
 
 # unit test
 target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wno-unused-parameter)
-target_include_directories(gnklog_utest PUBLIC src)
-target_link_libraries(gnklog_utest options)
+target_include_directories(gnklog_utest PUBLIC src src/ext)
+target_link_libraries(gnklog_utest options fmt)
