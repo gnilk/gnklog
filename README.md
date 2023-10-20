@@ -1,7 +1,6 @@
 # Gnilk Logger
 
 Dependecy: https://fmt.dev/latest/syntax.html  (src in src/ext/fmt - included)
-wef
 
 
 This the new Logger library. This replaces the 'logger' which I have been used for almost 20 years. 
