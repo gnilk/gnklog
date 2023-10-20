@@ -25,8 +25,8 @@ endif()
 # main source for logger library
 list(APPEND src src/logger.h)       ## <- old header
 
-
 list(APPEND src src/gnklog.cpp src/gnklog.h)
+list(APPEND src src/Log.cpp src/Log.h)
 list(APPEND src src/LogCore.cpp src/LogCore.h)
 list(APPEND src src/LogConsoleSink.cpp src/LogConsoleSink.h)
 list(APPEND src src/LogEvent.cpp src/LogEvent.h)
@@ -35,7 +35,7 @@ list(APPEND src src/LogEventPipeUnix.cpp src/LogEventPipeUnix.h)
 list(APPEND src src/LogInstance.h)
 list(APPEND src src/LogInternal.h)
 list(APPEND src src/LogManager.cpp src/LogManager.h)
-list(APPEND src src/LogWriter.cpp src/LogWriter.h)
+
 # unit test source code
 list(APPEND src_utest src/utests/test_gnklog.cpp)
 

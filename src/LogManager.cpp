@@ -11,10 +11,9 @@
 #include <algorithm>
 #include <deque>
 
+#include "LogCore.h"
 #include "LogManager.h"
 #include "LogConsoleSink.h"
-#include "LogWriter.h"
-
 
 using namespace gnilk;
 
@@ -64,7 +63,7 @@ LogInstance::Ref LogManager::GetOrAddLogInstance(const std::string &name) {
         return logInstances[name];
     }
     // Create the writer and the instance...
-    auto writer = LogWriter::Create(name);
+    auto writer = Log::Create(name);
     auto instance = LogInstance::Create(name, writer);
 
     logInstances[name] = instance;

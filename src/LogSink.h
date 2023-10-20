@@ -7,8 +7,11 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "LogEvent.h"
+
+
 
 namespace gnilk {
     class ILogOutputSink {

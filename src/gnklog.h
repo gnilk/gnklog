@@ -11,7 +11,9 @@
 #include <memory>
 #include <unordered_map>
 
+#include "Log.h"
 #include "LogCore.h"
+
 
 namespace gnilk {
 

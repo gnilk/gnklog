@@ -106,7 +106,7 @@ void LogEvent::ComposeReportString() {
 
 //
 // Writes a log event to the pipe
-// Called by LogWriter::Debug BEFORE the string is formatted
+// Called by Log::Debug BEFORE the string is formatted
 //
 size_t LogEvent::Write() {
 

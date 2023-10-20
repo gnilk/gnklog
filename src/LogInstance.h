@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "Log.h"
 #include "LogCore.h"
 
 namespace gnilk {
@@ -14,9 +15,9 @@ namespace gnilk {
     public:
         using Ref = std::shared_ptr<LogInstance>;
     public:
-        static LogInstance::Ref Create(const std::string &name, ILogger::Ref loggerInstance) {
+        static LogInstance::Ref Create(const std::string &name, Log::Ref logInstance) {
             // Note: using 'new' instead of make_shared since I want the CTOR protected!
-            auto ptrInst = new LogInstance(name, std::move(loggerInstance));
+            auto ptrInst = new LogInstance(name, std::move(logInstance));
             auto ref = std::shared_ptr<LogInstance>(ptrInst);
             return ref;
         }
@@ -26,19 +27,19 @@ namespace gnilk {
             return logName;
         }
 
-        ILogger::Ref GetLogger() {
+        Log::Ref GetLog() {
             return logger;
         }
 
     protected:
-        LogInstance(std::string name, ILogger::Ref loggerInstance) :
+        LogInstance(std::string name, Log::Ref logInstance) :
                 logName(std::move(name)),
-                logger(std::move(loggerInstance)) {
+                logger(std::move(logInstance)) {
 
         }
     private:
         std::string logName = {};
-        ILogger::Ref logger = {};
+        Log::Ref logger = {};
     };
 }
 

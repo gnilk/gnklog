@@ -13,10 +13,11 @@
 #include "LogCore.h"
 
 namespace gnilk {
-    class LogWriter;
+    class Log;
     class LogManager;
+
     class LogEvent {
-        friend LogWriter;
+        friend Log;
         friend LogManager;
     protected:
 

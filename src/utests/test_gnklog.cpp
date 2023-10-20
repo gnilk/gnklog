@@ -17,14 +17,22 @@ extern "C" {
 DLL_EXPORT int test_logger(ITesting *t);
 DLL_EXPORT int test_logger_exit(ITesting *t);
 DLL_EXPORT int test_logger_debug(ITesting *t);
+DLL_EXPORT int test_logger_debugref(ITesting *t);
 }
 
 DLL_EXPORT int test_logger(ITesting *t) {
     return kTR_Pass;
 }
+
 DLL_EXPORT int test_logger_exit(ITesting *t) {
+    auto logger = Logger::GetLogger("test2");
+
+    logger->DebugRef("2 mamma: %d, %s", 4, "world");
+    logger->DebugRef("2 Some more fascinating strings");
+    logger->DebugRef("2 Data is debug");
     return kTR_Pass;
 }
+
 DLL_EXPORT int test_logger_debug(ITesting *t) {
 
     auto logger = Logger::GetLogger("test");

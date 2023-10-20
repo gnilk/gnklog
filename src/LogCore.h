@@ -5,10 +5,7 @@
 #ifndef GNKLOG_LOGCORE_H
 #define GNKLOG_LOGCORE_H
 
-#include <memory>
 #include <chrono>
-#include <vector>
-#include <string>
 
 namespace gnilk {
 
@@ -28,15 +25,6 @@ namespace gnilk {
         kError    = 400,
         kCritical = 500,
         kCustom   = 600,
-    };
-
-    // The actual 'logger' is implemented by 'LogWriter' - very stupid, indeed...
-    class ILogger {
-    public:
-        using Ref = std::shared_ptr<ILogger>;
-    public:
-        virtual void Debug(const char *format, ...) = 0;
-        virtual void DebugRef(const char *format, ...) = 0;
     };
 
 }

@@ -17,7 +17,7 @@ ILogger::Ref Logger::GetLogger(const std::string &name) {
     if (instance == nullptr) {
         return nullptr;
     }
-    return instance->GetLogger();
+    return instance->GetLog();
 }
 
 // This is the old interface - not encouraged...
