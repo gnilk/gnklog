@@ -28,9 +28,9 @@ DLL_EXPORT int test_logger(ITesting *t) {
 DLL_EXPORT int test_logger_exit(ITesting *t) {
     auto logger = Logger::GetLogger("test2");
 
-    logger->DebugRef("2 mamma: %d, %s", 4, "world");
-    logger->DebugRef("2 Some more fascinating strings");
-    logger->DebugRef("2 Data is debug");
+    logger->Debug("2 mamma: %d, %s", 4, "world");
+    logger->Debug("2 Some more fascinating strings");
+    logger->Debug("2 Data is debug");
     return kTR_Pass;
 }
 
