@@ -17,8 +17,6 @@
 #include "LogEvent.h"
 #include "LogSink.h"
 
-
-
 namespace gnilk {
 
     // This mimics to some extent the old logger
