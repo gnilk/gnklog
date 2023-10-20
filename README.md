@@ -1,10 +1,16 @@
 # Gnilk Logger
 
+Dependecy: https://fmt.dev/latest/syntax.html  (src in src/ext/fmt - included)
+
+
 This the new Logger library. This replaces the 'logger' which I have been used for almost 20 years. 
 I want more or less the same interface but a more predictable modern design around it.
 
+This version supports two types of formatting, the {fmt} way and the old printf - both ways through {fmt} library
+
+
 The interesting stuff is in the following classes
-* LogWriter
+* Log
 * LogEvent
 * LogManager
 
