@@ -51,11 +51,18 @@ list(APPEND src_utest src/utests/test_gnklog.cpp)
 add_library(gnklog_utest SHARED ${src} ${src_utest})
 add_library(gnklog STATIC ${src})
 
+list(APPEND include_dirs src src/ext)
+if (APPLE)
+    list(APPEND include_dirs /usr/local/include)
+endif()
+
+
+
 target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow)
-target_include_directories(gnklog PUBLIC src src/ext)
+target_include_directories(gnklog PUBLIC ${include_dirs})
 target_link_libraries(gnklog options fmt)
 
 # unit test
 target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wno-unused-parameter)
-target_include_directories(gnklog_utest PUBLIC src src/ext)
+target_include_directories(gnklog_utest PUBLIC ${include_dirs})
 target_link_libraries(gnklog_utest options fmt)
