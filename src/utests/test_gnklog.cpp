@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <testinterface.h>
+
 #include "gnklog.h"
 
 using namespace gnilk;

@@ -11,8 +11,12 @@
 #include <memory>
 #include <unordered_map>
 
+// Bring in the main - external exposing files
 #include "Log.h"
 #include "LogCore.h"
+#include "LogEvent.h"
+#include "LogSink.h"
+
 
 
 namespace gnilk {
