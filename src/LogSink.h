@@ -29,7 +29,7 @@ namespace gnilk {
         virtual bool Open() {
             return false;
         };
-        virtual int Write(LogEvent &logEvent) {
+        virtual int Write(const LogEvent &logEvent) {
             return -1;
         };
         virtual void Flush() {  };

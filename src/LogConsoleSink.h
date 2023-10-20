@@ -16,7 +16,7 @@ namespace gnilk {
         virtual ~LogConsoleSink() = default;
 
         static ILogOutputSink::Ref Create();
-        int Write(LogEvent &logEvent);
+        int Write(const LogEvent &logEvent) override;
     };
 }
 

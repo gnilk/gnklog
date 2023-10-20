@@ -17,10 +17,9 @@ ILogOutputSink::Ref LogConsoleSink::Create() {
     return sink;
 }
 
-int LogConsoleSink::Write(LogEvent &logEvent) {
+int LogConsoleSink::Write(const LogEvent &logEvent) {
 
-    std::string logString;
-    logEvent.ToString(logString);
+    auto &logString = logEvent.String();
     fprintf(stdout, "%s", logString.c_str());
 
     return 1;

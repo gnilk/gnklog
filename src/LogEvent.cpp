@@ -14,6 +14,14 @@
 
 using namespace gnilk;
 
+
+//
+// Returns a const-ref to the report string - DO NOT change const of this string..
+//
+const std::string &LogEvent::String() const {
+    return reportString;
+}
+
 //
 // This will create the complete report string, cache it and return it.
 // In case there are several sinks - ok, I have never used more than two - but anyway - I like the ambition...
@@ -59,6 +67,7 @@ static const std::string &MessageClassNameFromInt(LogLevel level) {
 
 //
 // Compose a report string from an event
+// Consider removing the composer out of here...
 //
 void LogEvent::ComposeReportString() {
     char header[LOG_MAX_NAME_LEN + 64];

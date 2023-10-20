@@ -9,11 +9,7 @@
 #include <mutex>
 #include <future>
 #include <algorithm>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <cstdio>
-#include <unistd.h>
-#include <filesystem>
+#include <deque>
 
 #include "LogManager.h"
 #include "LogConsoleSink.h"
@@ -90,21 +86,22 @@ void LogManager::AddSink(ILogOutputSink::Ref sink) {
 void LogManager::SendToSinks() {
     std::lock_guard<std::mutex> lock(sinkLock);
 
-    // TODO: this should be async - or a thread... I don't know..
+    // Read and Compose the reporting string..
     LogEvent logEvent;
     logEvent.Read();
+    logEvent.ComposeReportString();
+
+    std::deque<std::future<int>> sinkReadyList;
 
     for(auto &sink : sinks) {
-        sink->Write(logEvent);
+        auto future = std::async(&ILogOutputSink::Write, sink, logEvent);
+        sinkReadyList.push_back(std::move(future));
     }
 
-/*
-    auto future = std::async([this, &event]()-> void {
-        for(auto &sink : sinks) {
+    while(!sinkReadyList.empty()) {
+        auto future = std::move(sinkReadyList.front());
+        future.get();
+        sinkReadyList.pop_front();
+    }
 
-        }
-    });
-
-    future.get();
-*/
 }

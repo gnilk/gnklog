@@ -19,15 +19,17 @@ namespace gnilk {
         friend LogWriter;
         friend LogManager;
     protected:
+
 #pragma pack(push, 1)
         struct EventStreamMessage {
-            uint8_t version;
-            LogTimeStamp  timeStamp;
-            std::thread::id idSenderThread;
+            uint8_t version = 0;
+            LogTimeStamp  timeStamp = {};
+            std::thread::id idSenderThread = {};
             LogLevel level = kDebug;
-            char sender[LOG_MAX_NAME_LEN];
+            char sender[LOG_MAX_NAME_LEN] = {};
         };
 #pragma pack(pop)
+
     public:
         LogEvent() = default;
         explicit LogEvent(LogLevel lvl) : level(lvl) {}
@@ -38,6 +40,7 @@ namespace gnilk {
         }
 
         size_t ToString(std::string &strOut);
+        const std::string &String() const;
 
     protected:
         size_t Write();     // FIXME: Rename -> WriteIPC    ??
