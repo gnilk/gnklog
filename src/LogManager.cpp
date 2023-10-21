@@ -5,7 +5,6 @@
 //
 // This is the main logger class, it will dispatch LogEvent's to sinks...
 //
-
 #include <mutex>
 #include <future>
 #include <algorithm>
@@ -72,17 +71,19 @@ LogInstance::Ref LogManager::GetOrAddLogInstance(const std::string &name) {
 }
 
 //
-// Adds a sink to the list of ACTIVE sinks
+// Adds a managed sink to the list of sinks
 //
 void LogManager::AddSink(ILogOutputSink::Ref sink) {
-    // TODO: Wrap this up in a class 'LogSinkInstanceManager' that holds the ILogOutputSink
-    //       Then have another 'LogInstanceUnmanaged' that just holds a pointer
-
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceManaged::Create(sink);
     sinks.push_back(std::move(sinkInstance));
 }
 
+//
+// Adds an unmanaged sink to the list of sinks
+// An unmanaged sink we have no control over - they can potentially go out of scope (be deleted and what not)
+// while we operate on them.
+//
 void LogManager::AddSink(ILogOutputSink *sink) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink);
