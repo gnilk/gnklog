@@ -20,6 +20,20 @@ ILogger::Ref Logger::GetLogger(const std::string &name) {
     return instance->GetLog();
 }
 
+void Logger::AddSink(ILogOutputSink::Ref sink, const std::string &name) {
+    LogManager::Instance().AddSink(sink, name);
+}
+void Logger::AddSink(ILogOutputSink *sink, const std::string &name) {
+    LogManager::Instance().AddSink(sink, name);
+}
+
+
+bool Logger::RemoveSink(const std::string &name) {
+    return LogManager::Instance().RemoveSink(name);
+}
+
+
+
 // This is the old interface - not encouraged...
 ILogger* Logger::GetLoggerPtr(const std::string &name) {
     auto instance = GetLogger(name);

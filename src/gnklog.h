@@ -31,6 +31,12 @@ namespace gnilk {
         static ILogger::Ref GetLogger(const std::string &name);
         static ILogger *GetLoggerPtr(const std::string &name);
 
+        static void AddSink(ILogOutputSink::Ref sink, const std::string &name);
+        static void AddSink(ILogOutputSink *sink, const std::string &name);
+
+        static bool RemoveSink(const std::string &name);
+
+
     };
 
 }
