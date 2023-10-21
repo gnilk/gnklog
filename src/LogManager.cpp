@@ -75,9 +75,20 @@ LogInstance::Ref LogManager::GetOrAddLogInstance(const std::string &name) {
 // Adds a sink to the list of ACTIVE sinks
 //
 void LogManager::AddSink(ILogOutputSink::Ref sink) {
+    // TODO: Wrap this up in a class 'LogSinkInstanceManager' that holds the ILogOutputSink
+    //       Then have another 'LogInstanceUnmanaged' that just holds a pointer
+
     std::lock_guard<std::mutex> lock(sinkLock);
-    sinks.push_back(sink);
+    auto sinkInstance = LogSinkInstanceManaged::Create(sink);
+    sinks.push_back(std::move(sinkInstance));
 }
+
+void LogManager::AddSink(ILogOutputSink *sink) {
+    std::lock_guard<std::mutex> lock(sinkLock);
+    auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink);
+    sinks.push_back(std::move(sinkInstance));
+}
+
 
 //
 // This will forward all data to the log sinks
@@ -92,7 +103,10 @@ void LogManager::SendToSinks() {
 
     std::deque<std::future<int>> sinkReadyList;
 
-    for(auto &sink : sinks) {
+    for(auto &sinkInstance : sinks) {
+        // This should not be problematic, except for maybe the unmanaged sink's which potentially could go out of
+        // scope while we do this...
+        auto sink = sinkInstance->GetSink();
         auto future = std::async(&ILogOutputSink::Write, sink, logEvent);
         sinkReadyList.push_back(std::move(future));
     }
