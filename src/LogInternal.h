@@ -28,14 +28,26 @@ namespace gnilk {
         virtual FILE *GetReadStream() { return nullptr; }
     };
 
+    //
+    // These classes are used to hold LogSink's in the LogManager class
+    // I differentiate between a managed (shared_ptr) and unmanged (raw ptr).
+    // Because I want to support the use case where you declare you sink's statically and just pass the instance pointer to them
+    //
     class LogSinkInstance {
     public:
         using Ref = std::unique_ptr<LogSinkInstance>;
     public:
         virtual ~LogSinkInstance() = default;
         virtual ILogOutputSink *GetSink() = 0;
+        const std::string &GetName() {
+            return name;
+        }
     protected:
-        LogSinkInstance() = default;
+        LogSinkInstance(const std::string &sinkName) : name(sinkName) {
+
+        }
+    protected:
+        const std::string name;
     };
 
     class LogSinkInstanceManaged : public LogSinkInstance {
@@ -44,12 +56,14 @@ namespace gnilk {
         ILogOutputSink *GetSink() override {
                 return sink.get();
         }
-        static Ref Create(ILogOutputSink::Ref sink) {
-            auto inst = new LogSinkInstanceManaged(sink);
+        static Ref Create(ILogOutputSink::Ref sink, const std::string &name) {
+            auto inst = new LogSinkInstanceManaged(sink, name);
             return std::unique_ptr<LogSinkInstanceManaged>(inst);
         }
     protected:
-        LogSinkInstanceManaged(ILogOutputSink::Ref sinkRef) : sink(sinkRef) {
+        LogSinkInstanceManaged(ILogOutputSink::Ref sinkRef, const std::string &sinkName) :
+            LogSinkInstance(sinkName),
+            sink(sinkRef) {
         }
         ILogOutputSink::Ref sink = nullptr;
     };
@@ -67,12 +81,14 @@ namespace gnilk {
         ILogOutputSink *GetSink() override {
             return sink;
         }
-        static Ref Create(ILogOutputSink *sink) {
-            auto inst = new LogSinkInstanceUnmanaged(sink);
+        static Ref Create(ILogOutputSink *sink, const std::string &name) {
+            auto inst = new LogSinkInstanceUnmanaged(sink, name);
             return std::unique_ptr<LogSinkInstanceUnmanaged>(inst);
         }
     protected:
-        LogSinkInstanceUnmanaged(ILogOutputSink *sinkPtr) : sink(sinkPtr) {
+        LogSinkInstanceUnmanaged(ILogOutputSink *sinkPtr, const std::string &sinkName) :
+                LogSinkInstance(sinkName),
+                sink(sinkPtr) {
 
         }
         ILogOutputSink *sink = nullptr;
