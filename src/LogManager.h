@@ -29,8 +29,10 @@ namespace gnilk {
         LogInstance::Ref GetOrAddLogInstance(const std::string &name);
 
         void RegisterDefaultSinks();
-        void AddSink(ILogOutputSink::Ref sink);
-        void AddSink(ILogOutputSink *sink);
+        void AddSink(ILogOutputSink::Ref sink, const std::string &name);
+        void AddSink(ILogOutputSink *sink, const std::string &name);
+
+        bool RemoveSink(const std::string &name);
 
         LogIPCBase &GetLogEventPipe() {
             return eventPipe;

@@ -51,7 +51,7 @@ void LogManager::Initialize() {
 //
 void LogManager::RegisterDefaultSinks() {
     auto consoleSink = LogConsoleSink::Create();
-    AddSink(consoleSink);
+    AddSink(consoleSink, "console");
 }
 
 //
@@ -73,9 +73,9 @@ LogInstance::Ref LogManager::GetOrAddLogInstance(const std::string &name) {
 //
 // Adds a managed sink to the list of sinks
 //
-void LogManager::AddSink(ILogOutputSink::Ref sink) {
+void LogManager::AddSink(ILogOutputSink::Ref sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
-    auto sinkInstance = LogSinkInstanceManaged::Create(sink);
+    auto sinkInstance = LogSinkInstanceManaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
 }
 
@@ -84,12 +84,28 @@ void LogManager::AddSink(ILogOutputSink::Ref sink) {
 // An unmanaged sink we have no control over - they can potentially go out of scope (be deleted and what not)
 // while we operate on them.
 //
-void LogManager::AddSink(ILogOutputSink *sink) {
+void LogManager::AddSink(ILogOutputSink *sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
-    auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink);
+    auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
 }
 
+//
+// Remove a sink with a specific name, if not found we return false
+//
+bool LogManager::RemoveSink(const std::string &name) {
+    std::lock_guard<std::mutex> lock(sinkLock);
+
+    auto itSink = std::find_if(sinks.begin(), sinks.end(), [&name](const LogSinkInstance::Ref &other)->bool {
+        return (other->GetName() == name);
+    });
+
+    if (itSink == sinks.end()) {
+        return false;
+    }
+    sinks.erase(itSink);
+    return true;
+}
 
 //
 // This will forward all data to the log sinks
