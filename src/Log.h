@@ -24,6 +24,13 @@ namespace gnilk {
         static Log::Ref Create(const std::string &logName);
         virtual ~Log();
 
+        void SetEnabled(bool newIsEnabled) {
+            isEnabled = newIsEnabled;
+        }
+        bool IsEnabled() {
+            return isEnabled;
+        }
+
         //
         // New and improved, using fmt - see: https://fmt.dev/latest/syntax.html
         //
@@ -95,7 +102,8 @@ namespace gnilk {
         void Initialize();
         void GenerateAndSendEventData(LogEvent &outEvent, LogLevel level) const;
     private:
-        std::string name;
+        std::string name = {};
+        bool isEnabled = true;
     };
 
     // Legacy - for now...
