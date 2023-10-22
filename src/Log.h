@@ -36,26 +36,31 @@ namespace gnilk {
         //
         template <class...T>
         inline void Dbg(T... arguments) {
+            if (!isEnabled) return;
             auto str = fmt::format(arguments...);
             SendLogMessage(kDebug, str);
         }
         template <class...T>
         inline void Inf(T... arguments) {
+            if (!isEnabled) return;
             auto str = fmt::format(arguments...);
             SendLogMessage(kInfo, str);
         }
         template <class...T>
         inline void Warn(T... arguments) {
+            if (!isEnabled) return;
             auto str = fmt::format(arguments...);
             SendLogMessage(kWarning, str);
         }
         template <class...T>
         inline void Err(T... arguments) {
+            if (!isEnabled) return;
             auto str = fmt::format(arguments...);
             SendLogMessage(kError, str);
         }
         template <class...T>
         inline void Crit(T... arguments) {
+            if (!isEnabled) return;
             auto str = fmt::format(arguments...);
             SendLogMessage(kCritical, str);
         }
@@ -65,30 +70,35 @@ namespace gnilk {
         //
         template <class...T>
         inline void Debug(T... arguments) const {
+            if (!isEnabled) return;
             auto str = fmt::sprintf(arguments...);
             SendLogMessage(kDebug, str);
         }
 
         template <class...T>
         inline void Info(T... arguments) const {
+            if (!isEnabled) return;
             auto str = fmt::sprintf(arguments...);
             SendLogMessage(kInfo, str);
         }
 
         template <class...T>
         inline void Warning(T... arguments) const {
+            if (!isEnabled) return;
             auto str = fmt::sprintf(arguments...);
             SendLogMessage(kWarning, str);
         }
 
         template <class...T>
         inline void Error(T... arguments) const {
+            if (!isEnabled) return;
             auto str = fmt::sprintf(arguments...);
             SendLogMessage(kError, str);
         }
 
         template <class...T>
         inline void Critical(T... arguments) const {
+            if (!isEnabled) return;
             auto str = fmt::sprintf(arguments...);
             SendLogMessage(kCritical, str);
         }
