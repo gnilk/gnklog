@@ -57,17 +57,33 @@ void LogManager::RegisterDefaultSinks() {
 //
 // Returns an existing log-instance with a specific name or creates one if none is found
 //
-LogInstance::Ref LogManager::GetOrAddLogInstance(const std::string &name) {
+Log::Ref LogManager::GetOrAddLog(const std::string &name) {
+    std::lock_guard<std::mutex> lock(instLock);
+
     if (logInstances.find(name) != logInstances.end()) {
-        return logInstances[name];
+        return logInstances[name]->GetLog();
     }
     // Create the writer and the instance...
     auto writer = Log::Create(name);
     auto instance = LogInstance::Create(name, writer);
 
     logInstances[name] = instance;
-    return instance;
+    return instance->GetLog();
+}
+
+Log::Ref LogManager::GetExistingLog(const std::string &name) {
+    std::lock_guard<std::mutex> lock(instLock);
+    if (logInstances.find(name) != logInstances.end()) {
+        return logInstances[name]->GetLog();
+    }
     return nullptr;
+}
+
+void LogManager::IterateLogs(std::function<void(const Log::Ref &)> cbInstance) {
+    std::lock_guard<std::mutex> lock(instLock);
+    for(auto [name, inst] : logInstances) {
+        cbInstance(inst->GetLog());
+    }
 }
 
 //

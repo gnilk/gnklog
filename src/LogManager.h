@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <mutex>
+#include <functional>
 
 #include "LogCore.h"
 #include "LogEventFifoUnix.h"
@@ -26,7 +27,9 @@ namespace gnilk {
 
     public:
         void Initialize();
-        LogInstance::Ref GetOrAddLogInstance(const std::string &name);
+        Log::Ref GetOrAddLog(const std::string &name);
+        Log::Ref GetExistingLog(const std::string &name);
+        void IterateLogs(std::function<void(const Log::Ref &)>);
 
         void RegisterDefaultSinks();
         void AddSink(ILogOutputSink::Ref sink, const std::string &name);
@@ -46,10 +49,10 @@ namespace gnilk {
     protected:
         bool isInitialized = false;
 
-
         LogEventPipeUnix eventPipe;
 //        LogEventFifoUnix eventPipe;
 
+        std::mutex instLock;
         std::mutex sinkLock;
         std::unordered_map<std::string, LogInstance::Ref> logInstances;
         std::vector<LogSinkInstance::Ref> sinks;

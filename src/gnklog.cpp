@@ -13,12 +13,38 @@ void Logger::Initialize() {
 
 // New interface - returns shared ptr...
 ILogger::Ref Logger::GetLogger(const std::string &name) {
-    auto instance = LogManager::Instance().GetOrAddLogInstance(name);
-    if (instance == nullptr) {
-        return nullptr;
-    }
-    return instance->GetLog();
+    return LogManager::Instance().GetOrAddLog(name);
 }
+
+void Logger::DisableLogger(const std::string &name) {
+    auto log = LogManager::Instance().GetExistingLog(name);
+    if (log == nullptr) {
+        return;
+    }
+
+    log->SetEnabled(false);
+}
+void Logger::EnableLogger(const std::string &name) {
+    auto log = LogManager::Instance().GetExistingLog(name);
+    if (log == nullptr) {
+        return;
+    }
+
+    log->SetEnabled(false);
+}
+
+void Logger::EnableAllLoggers() {
+    LogManager::Instance().IterateLogs([](const Log::Ref &log) {
+       log->SetEnabled(true);
+    });
+}
+
+void Logger::DisableAllLoggers() {
+    LogManager::Instance().IterateLogs([](const Log::Ref &log) {
+        log->SetEnabled(false);
+    });
+}
+
 
 void Logger::AddSink(ILogOutputSink::Ref sink, const std::string &name) {
     LogManager::Instance().AddSink(sink, name);

@@ -28,9 +28,17 @@ namespace gnilk {
         virtual ~Logger() = default;
 
         static void Initialize();
+
+        // Log functionality
         static ILogger::Ref GetLogger(const std::string &name);
         static ILogger *GetLoggerPtr(const std::string &name);
+        static void DisableLogger(const std::string &name);
+        static void EnableLogger(const std::string &name);
+        static void DisableAllLoggers();
+        static void EnableAllLoggers();
 
+
+        // Sink functionality
         static void AddSink(ILogOutputSink::Ref sink, const std::string &name);
         static void AddSink(ILogOutputSink *sink, const std::string &name);
 
