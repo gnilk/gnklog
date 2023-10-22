@@ -29,13 +29,13 @@ namespace gnilk {
         void Initialize();
         Log::Ref GetOrAddLog(const std::string &name);
         Log::Ref GetExistingLog(const std::string &name);
-        void IterateLogs(std::function<void(const Log::Ref &)>);
+        void IterateLogs(const std::function<void(const Log::Ref &)> &);
 
         void RegisterDefaultSinks();
-        void AddSink(ILogOutputSink::Ref sink, const std::string &name);
-        void AddSink(ILogOutputSink *sink, const std::string &name);
-
+        void AddSink(LogSink::Ref sink, const std::string &name);
+        void AddSink(LogSink *sink, const std::string &name);
         bool RemoveSink(const std::string &name);
+        void IterateSinks(const std::function<void(const LogSink *)> &);
 
         LogIPCBase &GetLogEventPipe() {
             return eventPipe;

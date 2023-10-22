@@ -39,10 +39,10 @@ namespace gnilk {
 
 
         // Sink functionality
-        static void AddSink(ILogOutputSink::Ref sink, const std::string &name);
-        static void AddSink(ILogOutputSink *sink, const std::string &name);
-
+        static void AddSink(LogSink::Ref sink, const std::string &name);
+        static void AddSink(LogSink *sink, const std::string &name);
         static bool RemoveSink(const std::string &name);
+        static void SetAllSinkDebugLevel(LogLevel newDebugLevel);
 
 
     };

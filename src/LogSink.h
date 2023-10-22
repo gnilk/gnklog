@@ -14,17 +14,27 @@
 
 
 namespace gnilk {
-    class ILogOutputSink {
+    class LogManager;
+
+    class LogSink {
+        friend LogManager;
     public:
-        using Ref = std::shared_ptr<ILogOutputSink>;
+        using Ref = std::shared_ptr<LogSink>;
     public:
-        ILogOutputSink() = default;
-        explicit ILogOutputSink(const std::string &sinkName) : name(sinkName) {}
-        virtual ~ILogOutputSink() = default;
+        LogSink() = default;
+        explicit LogSink(const std::string &sinkName) : name(sinkName) {}
+        virtual ~LogSink() = default;
 
         const std::string &GetName() {
             return name;
         };
+
+        LogLevel GetLogLevelThreshold() {
+            return logLevelThreshold;
+        }
+        void SetLogLevelThreshold(LogLevel newThreshold) {
+            logLevelThreshold = newThreshold;
+        }
 
         virtual void Initialize([[maybe_unused]] const std::vector<const std::string &> &args) {
 
@@ -37,12 +47,17 @@ namespace gnilk {
         };
         virtual void Flush() {  };
         virtual void Close() {  };
-
+    protected:
+        __inline bool WithinRange(LogLevel msgLevel) {
+            return ((msgLevel >= logLevelThreshold)?true: false);
+        }
     private:
         const std::string name;
+        LogLevel logLevelThreshold = kNone;
     };
     // legacy compatibility
-    using LogBaseSink = ILogOutputSink;
+    using LogBaseSink = LogSink;
+    using ILogOutputSink = LogSink;
 
 }
 

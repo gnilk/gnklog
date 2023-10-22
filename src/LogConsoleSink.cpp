@@ -12,7 +12,7 @@
 
 using namespace gnilk;
 
-ILogOutputSink::Ref LogConsoleSink::Create() {
+LogSink::Ref LogConsoleSink::Create() {
     auto sink = std::make_shared<LogConsoleSink>();
     return sink;
 }

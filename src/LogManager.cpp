@@ -79,7 +79,7 @@ Log::Ref LogManager::GetExistingLog(const std::string &name) {
     return nullptr;
 }
 
-void LogManager::IterateLogs(std::function<void(const Log::Ref &)> cbInstance) {
+void LogManager::IterateLogs(const std::function<void(const Log::Ref &)> &cbInstance) {
     std::lock_guard<std::mutex> lock(instLock);
     for(auto [name, inst] : logInstances) {
         cbInstance(inst->GetLog());
@@ -89,7 +89,7 @@ void LogManager::IterateLogs(std::function<void(const Log::Ref &)> cbInstance) {
 //
 // Adds a managed sink to the list of sinks
 //
-void LogManager::AddSink(ILogOutputSink::Ref sink, const std::string &name) {
+void LogManager::AddSink(LogSink::Ref sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceManaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
@@ -100,7 +100,7 @@ void LogManager::AddSink(ILogOutputSink::Ref sink, const std::string &name) {
 // An unmanaged sink we have no control over - they can potentially go out of scope (be deleted and what not)
 // while we operate on them.
 //
-void LogManager::AddSink(ILogOutputSink *sink, const std::string &name) {
+void LogManager::AddSink(LogSink *sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
@@ -123,6 +123,13 @@ bool LogManager::RemoveSink(const std::string &name) {
     return true;
 }
 
+void LogManager::IterateSinks(const std::function<void(const LogSink *)> &cbSink) {
+    std::lock_guard<std::mutex> lock(sinkLock);
+    for(auto &sink : sinks) {
+        cbSink(sink->GetSink());
+    }
+}
+
 //
 // This will forward all data to the log sinks
 //
@@ -140,7 +147,13 @@ void LogManager::SendToSinks() {
         // This should not be problematic, except for maybe the unmanaged sink's which potentially could go out of
         // scope while we do this...
         auto sink = sinkInstance->GetSink();
-        auto future = std::async(&ILogOutputSink::Write, sink, logEvent);
+
+        // Don't even send it unless it is within the range...
+        if (!sink->WithinRange(logEvent.level)) {
+            continue;
+        }
+
+        auto future = std::async(&LogSink::Write, sink, logEvent);
         sinkReadyList.push_back(std::move(future));
     }
 

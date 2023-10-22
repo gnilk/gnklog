@@ -46,10 +46,10 @@ void Logger::DisableAllLoggers() {
 }
 
 
-void Logger::AddSink(ILogOutputSink::Ref sink, const std::string &name) {
+void Logger::AddSink(LogSink::Ref sink, const std::string &name) {
     LogManager::Instance().AddSink(sink, name);
 }
-void Logger::AddSink(ILogOutputSink *sink, const std::string &name) {
+void Logger::AddSink(LogSink *sink, const std::string &name) {
     LogManager::Instance().AddSink(sink, name);
 }
 
@@ -58,7 +58,11 @@ bool Logger::RemoveSink(const std::string &name) {
     return LogManager::Instance().RemoveSink(name);
 }
 
+void Logger::SetAllSinkDebugLevel(LogLevel newDebugLevel) {
+    LogManager::Instance().IterateSinks([newDebugLevel](const LogSink *sink) {
 
+    });
+}
 
 // This is the old interface - not encouraged...
 ILogger* Logger::GetLoggerPtr(const std::string &name) {

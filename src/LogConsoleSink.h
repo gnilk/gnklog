@@ -10,12 +10,12 @@
 
 namespace gnilk {
 
-    class LogConsoleSink : public ILogOutputSink {
+    class LogConsoleSink : public LogSink {
     public:
-        LogConsoleSink() : ILogOutputSink("console") {}
+        LogConsoleSink() : LogSink("console") {}
         virtual ~LogConsoleSink() = default;
 
-        static ILogOutputSink::Ref Create();
+        static LogSink::Ref Create();
         int Write(const LogEvent &logEvent) override;
     };
 }

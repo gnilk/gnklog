@@ -38,7 +38,7 @@ namespace gnilk {
         using Ref = std::unique_ptr<LogSinkInstance>;
     public:
         virtual ~LogSinkInstance() = default;
-        virtual ILogOutputSink *GetSink() = 0;
+        virtual LogSink *GetSink() = 0;
         const std::string &GetName() {
             return name;
         }
@@ -53,19 +53,19 @@ namespace gnilk {
     class LogSinkInstanceManaged : public LogSinkInstance {
     public:
         virtual ~LogSinkInstanceManaged() = default;
-        ILogOutputSink *GetSink() override {
+        LogSink *GetSink() override {
                 return sink.get();
         }
-        static Ref Create(ILogOutputSink::Ref sink, const std::string &name) {
+        static Ref Create(LogSink::Ref sink, const std::string &name) {
             auto inst = new LogSinkInstanceManaged(sink, name);
             return std::unique_ptr<LogSinkInstanceManaged>(inst);
         }
     protected:
-        LogSinkInstanceManaged(ILogOutputSink::Ref sinkRef, const std::string &sinkName) :
+        LogSinkInstanceManaged(LogSink::Ref sinkRef, const std::string &sinkName) :
             LogSinkInstance(sinkName),
             sink(sinkRef) {
         }
-        ILogOutputSink::Ref sink = nullptr;
+        LogSink::Ref sink = nullptr;
     };
 
     //
@@ -78,20 +78,20 @@ namespace gnilk {
     class LogSinkInstanceUnmanaged : public LogSinkInstance {
     public:
         virtual ~LogSinkInstanceUnmanaged() = default;
-        ILogOutputSink *GetSink() override {
+        LogSink *GetSink() override {
             return sink;
         }
-        static Ref Create(ILogOutputSink *sink, const std::string &name) {
+        static Ref Create(LogSink *sink, const std::string &name) {
             auto inst = new LogSinkInstanceUnmanaged(sink, name);
             return std::unique_ptr<LogSinkInstanceUnmanaged>(inst);
         }
     protected:
-        LogSinkInstanceUnmanaged(ILogOutputSink *sinkPtr, const std::string &sinkName) :
+        LogSinkInstanceUnmanaged(LogSink *sinkPtr, const std::string &sinkName) :
                 LogSinkInstance(sinkName),
                 sink(sinkPtr) {
 
         }
-        ILogOutputSink *sink = nullptr;
+        LogSink *sink = nullptr;
     };
 }
 
