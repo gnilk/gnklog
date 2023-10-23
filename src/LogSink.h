@@ -48,6 +48,12 @@ namespace gnilk {
         virtual void Flush() {  };
         virtual void Close() {  };
     protected:
+        //
+        // We got attached, this will require a bit more logic..
+        // Should this be here??
+        //
+        virtual void OnAttached();
+
         __inline bool WithinRange(LogLevel msgLevel) {
             return ((msgLevel >= logLevelThreshold)?true: false);
         }
