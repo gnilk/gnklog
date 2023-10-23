@@ -59,8 +59,8 @@ bool Logger::RemoveSink(const std::string &name) {
 }
 
 void Logger::SetAllSinkDebugLevel(LogLevel newDebugLevel) {
-    LogManager::Instance().IterateSinks([newDebugLevel](const LogSink *sink) {
-
+    LogManager::Instance().IterateSinks([newDebugLevel](LogSink *sink) {
+        sink->SetLogLevelThreshold(newDebugLevel);
     });
 }
 
