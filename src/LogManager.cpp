@@ -93,6 +93,7 @@ void LogManager::AddSink(LogSink::Ref sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceManaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
+    sink->OnAttached();
 }
 
 //
@@ -104,6 +105,7 @@ void LogManager::AddSink(LogSink *sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
+    sink->OnAttached();
 }
 
 //
@@ -123,11 +125,16 @@ bool LogManager::RemoveSink(const std::string &name) {
     return true;
 }
 
-void LogManager::IterateSinks(const std::function<void(const LogSink *)> &cbSink) {
+void LogManager::IterateSinks(const SinkDelegate &delegate) {
     std::lock_guard<std::mutex> lock(sinkLock);
     for(auto &sink : sinks) {
-        cbSink(sink->GetSink());
+        delegate(sink->GetSink());
     }
+}
+
+void LogManager::IterateCache(const CacheDelegate &delegate) {
+    // FIXME: This should basically just forward to the log-cache - we just don't want to expose the cache to the outside world..
+    // cache.Iterate(delegate);
 }
 
 //
@@ -136,8 +143,11 @@ void LogManager::IterateSinks(const std::function<void(const LogSink *)> &cbSink
 void LogManager::SendToSinks() {
     std::lock_guard<std::mutex> lock(sinkLock);
 
+    // FIXME: From cache fetch next:
+    // LogEvent &logEvent = cache.Next();
+
     // Read and Compose the reporting string..
-    LogEvent logEvent;
+    LogEvent logEvent;      // <- remove one the log-cache is in place...
     logEvent.Read();
     logEvent.ComposeReportString();
 
