@@ -43,6 +43,7 @@ list(APPEND src src/LogEventPipeUnix.cpp src/LogEventPipeUnix.h)
 list(APPEND src src/LogInstance.h)
 list(APPEND src src/LogInternal.h)
 list(APPEND src src/LogManager.cpp src/LogManager.h)
+list(APPEND src src/LogSink.cpp src/LogSink.h)
 
 # unit test source code
 list(APPEND src_utest src/utests/test_gnklog.cpp)
