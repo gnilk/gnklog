@@ -46,14 +46,6 @@ namespace gnilk {
             return -1;
         };
 
-        // Default impl. just filters on the range and forwards to normal write - this makes cached event handling
-        // work for most use-cases without custom sink's needing to do anything...
-        virtual bool WriteCachedEvent(const LogEvent &logEvent) {
-            if (WithinRange(logEvent.level)) {
-                if (Write(logEvent) < 0) return false;
-            }
-            return true;
-        }
         virtual void Flush() {  };
         virtual void Close() {  };
     protected:
