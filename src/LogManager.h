@@ -29,7 +29,15 @@ namespace gnilk {
     class LogManager {
         friend LogSink;
     public:
-        using SinkDelegate = std::function<void(LogSink *)>;
+        // Returns
+        //   'true' continue iteration
+        //   'false' stop iteration
+        using SinkDelegate = std::function<bool(LogSink *)>;
+
+        // Returns
+        //   'true' continue iteration
+        //   'false' stop iteration
+        using LogDelegate = std::function<bool(const Log::Ref &)>;
     public:
         virtual ~LogManager();
         static LogManager &Instance();
@@ -39,8 +47,9 @@ namespace gnilk {
         void Initialize();
         Log::Ref GetOrAddLog(const std::string &name);
         Log::Ref GetExistingLog(const std::string &name);
-        void IterateLogs(const std::function<void(const Log::Ref &)> &);
+        void IterateLogs(const LogDelegate &);
 
+        // We don't handle sink's the same way ('GetExisting') as we can't gurantee they go out of scope
         void RegisterDefaultSinks();
         void AddSink(LogSink::Ref sink, const std::string &name);
         void AddSink(LogSink *sink, const std::string &name);

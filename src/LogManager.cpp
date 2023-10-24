@@ -105,7 +105,7 @@ Log::Ref LogManager::GetExistingLog(const std::string &name) {
     return nullptr;
 }
 
-void LogManager::IterateLogs(const std::function<void(const Log::Ref &)> &cbInstance) {
+void LogManager::IterateLogs(const LogDelegate &cbInstance) {
     std::lock_guard<std::mutex> lock(instLock);
     for(auto [name, inst] : logInstances) {
         cbInstance(inst->GetLog());
@@ -119,7 +119,6 @@ void LogManager::AddSink(LogSink::Ref sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceManaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
-
     // FIXME: This is not good - we can't do this during initialization
     if (isInitialized) {
         sink->OnAttached();
@@ -190,6 +189,9 @@ void LogManager::SendToSinks() {
 
         // Don't even send it unless it is within the range...
         if (!sink->WithinRange(logEvent->level)) {
+            continue;
+        }
+        if (!sink->IsEnabled()) {
             continue;
         }
 
