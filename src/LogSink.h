@@ -25,6 +25,13 @@ namespace gnilk {
         explicit LogSink(const std::string &sinkName) : name(sinkName) {}
         virtual ~LogSink() = default;
 
+        bool IsEnabled() const {
+            return isEnabled;
+        }
+        void SetEnabled(bool newIsEnabled) {
+            isEnabled = newIsEnabled;
+        }
+
         const std::string &GetName() {
             return name;
         };
@@ -59,6 +66,7 @@ namespace gnilk {
             return ((msgLevel >= logLevelThreshold)?true: false);
         }
     private:
+        bool isEnabled = true;
         const std::string name;
         LogLevel logLevelThreshold = kNone;
     };
