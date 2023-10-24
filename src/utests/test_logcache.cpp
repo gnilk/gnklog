@@ -4,12 +4,14 @@
 #include <testinterface.h>
 #include "gnklog.h"
 #include "LogCache.h"
+#include "LogManager.h"
 #include "fmt/format.h"
 
 using namespace gnilk;
 extern "C" {
 DLL_EXPORT int test_logcache(ITesting *t);
 DLL_EXPORT int test_logcache_create(ITesting *t);
+DLL_EXPORT int test_logcache_sinkattach(ITesting *t);
 }
 
 DLL_EXPORT int test_logcache(ITesting *t) {
@@ -55,3 +57,32 @@ DLL_EXPORT int test_logcache_create(ITesting *t) {
     return kTR_Pass;
 }
 
+class VectorSink : public LogSink {
+public:
+    VectorSink() = default;
+    virtual ~VectorSink() = default;
+
+    int Write(const LogEvent &logEvent) override {
+        logmessages.push_back(logEvent.msgString);
+        return 1;
+    };
+public:
+    std::vector<std::string> logmessages;
+};
+
+DLL_EXPORT int test_logcache_sinkattach(ITesting *t) {
+    VectorSink mySink;
+    LogManager::Instance().Reset();
+
+    auto logger = Logger::GetLogger("attach");
+    logger->Debug("1");
+    logger->Debug("2");
+
+    TR_ASSERT(t, mySink.logmessages.size() == 0);
+    LogManager::Instance().AddSink(&mySink, "mysink");
+    TR_ASSERT(t, mySink.logmessages.size() == 2);
+    logger->Debug("3");
+    TR_ASSERT(t, mySink.logmessages.size() == 3);
+
+    return kTR_Pass;
+}
