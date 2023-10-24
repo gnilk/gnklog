@@ -37,8 +37,14 @@ void LogManager::Initialize() {
     if (isInitialized) {
         return;
     }
-    RegisterDefaultSinks();
 
+    // IF we support some kind of configuration - except for compile time - we should deal with it here..
+    // Option 2 - copy the 'property' object concept over from old logger and set all defaults in it - let the
+    // app have the ability to supply/create/modify the Property object before we initialize...
+
+    cache = LogCache::Create(cacheCapacity);
+
+    RegisterDefaultSinks();
     if (!eventPipe.Open()) {
         exit(1);
     }
@@ -93,6 +99,7 @@ void LogManager::AddSink(LogSink::Ref sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceManaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
+    SendCacheToSink_NoLock(sink.get());
 }
 
 //
@@ -104,6 +111,18 @@ void LogManager::AddSink(LogSink *sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
+    SendCacheToSink_NoLock(sink);
+}
+
+//
+// Dumps the cache to the sink...
+//
+void LogManager::SendCacheToSink_NoLock(LogSink *sink) {
+    // This is perhaps a bit crude - we should have a distinction so that sink's know if this is a cached event or not
+    cache->Iterate([sink](const LogEvent &event) {
+        sink->WriteCachedEvent(event);
+        return true;
+    });
 }
 
 //
@@ -136,10 +155,10 @@ void LogManager::IterateSinks(const std::function<void(const LogSink *)> &cbSink
 void LogManager::SendToSinks() {
     std::lock_guard<std::mutex> lock(sinkLock);
 
-    // Read and Compose the reporting string..
-    LogEvent logEvent;
-    logEvent.Read();
-    logEvent.ComposeReportString();
+    // Fetch next event from the cache
+    auto logEvent = cache->Next();
+    logEvent->Read();                   // Read it from the underlying pipe
+    logEvent->ComposeReportString();    // pre-compose the report string...
 
     std::deque<std::future<int>> sinkReadyList;
 
@@ -149,11 +168,11 @@ void LogManager::SendToSinks() {
         auto sink = sinkInstance->GetSink();
 
         // Don't even send it unless it is within the range...
-        if (!sink->WithinRange(logEvent.level)) {
+        if (!sink->WithinRange(logEvent->level)) {
             continue;
         }
 
-        auto future = std::async(&LogSink::Write, sink, logEvent);
+        auto future = std::async(&LogSink::Write, sink, *logEvent);
         sinkReadyList.push_back(std::move(future));
     }
 

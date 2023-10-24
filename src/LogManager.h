@@ -12,6 +12,7 @@
 #include <functional>
 
 #include "LogCore.h"
+#include "LogCache.h"
 #include "LogEventFifoUnix.h"
 #include "LogEventPipeUnix.h"
 #include "LogInstance.h"
@@ -19,6 +20,10 @@
 #include "LogSink.h"
 
 namespace gnilk {
+// We keep 100 log events in the cache
+#ifndef GNILK_LOG_CACHE_CAPACITY
+    #define GNILK_LOG_CACHE_CAPACITY 100
+#endif
 
     class LogManager {
     public:
@@ -45,13 +50,16 @@ namespace gnilk {
 
     private:
         LogManager() = default;
+        void SendCacheToSink_NoLock(LogSink *sink);
 
     protected:
         bool isInitialized = false;
+        size_t cacheCapacity = GNILK_LOG_CACHE_CAPACITY;
 
         LogEventPipeUnix eventPipe;
 //        LogEventFifoUnix eventPipe;
 
+        LogCache::Ref cache = {};
         std::mutex instLock;
         std::mutex sinkLock;
         std::unordered_map<std::string, LogInstance::Ref> logInstances;
