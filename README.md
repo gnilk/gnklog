@@ -30,5 +30,6 @@ Plus have it flexible, portable and somewhat nice...
 + LogCache, cache up lines and when a sink attach send them all (default/base impl) to the sink
 - Enable/Disable sink's
 - LogLevel for Log's - not just sinks (assume a Sink is configured for everything, but from modules XYZ I just want Errors)
+- Add git workflow
  
 ```
