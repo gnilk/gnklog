@@ -45,6 +45,7 @@ void LogManager::Initialize() {
     cache = LogCache::Create(cacheCapacity);
 
     RegisterDefaultSinks();
+
     if (!eventPipe.Open()) {
         exit(1);
     }
@@ -99,7 +100,7 @@ void LogManager::AddSink(LogSink::Ref sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceManaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
-    SendCacheToSink_NoLock(sink.get());
+    sink->OnAttached();
 }
 
 //
@@ -111,18 +112,7 @@ void LogManager::AddSink(LogSink *sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
-    SendCacheToSink_NoLock(sink);
-}
-
-//
-// Dumps the cache to the sink...
-//
-void LogManager::SendCacheToSink_NoLock(LogSink *sink) {
-    // This is perhaps a bit crude - we should have a distinction so that sink's know if this is a cached event or not
-    cache->Iterate([sink](const LogEvent &event) {
-        sink->WriteCachedEvent(event);
-        return true;
-    });
+    sink->OnAttached();
 }
 
 //
@@ -142,11 +132,16 @@ bool LogManager::RemoveSink(const std::string &name) {
     return true;
 }
 
-void LogManager::IterateSinks(const std::function<void(const LogSink *)> &cbSink) {
+void LogManager::IterateSinks(const SinkDelegate &delegate) {
     std::lock_guard<std::mutex> lock(sinkLock);
     for(auto &sink : sinks) {
-        cbSink(sink->GetSink());
+        delegate(sink->GetSink());
     }
+}
+
+void LogManager::IterateCache(const CacheDelegate &delegate) {
+    // FIXME: This should basically just forward to the log-cache - we just don't want to expose the cache to the outside world..
+    // cache.Iterate(delegate);
 }
 
 //

@@ -19,6 +19,7 @@
 #include "LogInternal.h"
 #include "LogSink.h"
 
+
 namespace gnilk {
 // We keep 100 log events in the cache
 #ifndef GNILK_LOG_CACHE_CAPACITY
@@ -26,6 +27,10 @@ namespace gnilk {
 #endif
 
     class LogManager {
+        friend LogSink;
+    public:
+        using CacheDelegate = std::function<void(const LogEvent &event)>;
+        using SinkDelegate = std::function<void(LogSink *)>;
     public:
         virtual ~LogManager();
         static LogManager &Instance();
@@ -40,13 +45,15 @@ namespace gnilk {
         void AddSink(LogSink::Ref sink, const std::string &name);
         void AddSink(LogSink *sink, const std::string &name);
         bool RemoveSink(const std::string &name);
-        void IterateSinks(const std::function<void(const LogSink *)> &);
+        void IterateSinks(const SinkDelegate &);
 
         LogIPCBase &GetLogEventPipe() {
             return eventPipe;
         }
 
         void SendToSinks();
+    protected:
+        void IterateCache(const CacheDelegate &);
 
     private:
         LogManager() = default;
