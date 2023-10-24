@@ -43,6 +43,10 @@ namespace gnilk {
         static void AddSink(LogSink *sink, const std::string &name);
         static bool RemoveSink(const std::string &name);
         static void SetAllSinkDebugLevel(LogLevel newDebugLevel);
+        static void DisableSink(const std::string &name);
+        static void EnableSink(const std::string &name);
+        static void DisableAllSinks();
+        static void EnableAllSinks();
 
 
     };
