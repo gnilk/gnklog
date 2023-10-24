@@ -30,6 +30,25 @@ LogManager::~LogManager() {
     // event pipe will close through DTOR
 }
 
+// This will reset all data - mainly for unit-testing..
+// NOTE: Any sink registered as unmanaged will be left untouched - i.e. the instance will be dangling unless
+// the caller delete it!
+void LogManager::Reset() {
+    if (!isInitialized) {
+        Initialize();
+        return;
+    }
+    std::lock_guard<std::mutex> lock(instLock);
+    cache->Clear();
+    sinks.clear();
+    logInstances.clear();
+
+    // FIXME: this is not nice nor good...
+    isInitialized = false;
+    RegisterDefaultSinks();
+    isInitialized = true;
+}
+
 //
 // Initialize the logger
 //
@@ -100,7 +119,11 @@ void LogManager::AddSink(LogSink::Ref sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceManaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
-    sink->OnAttached();
+
+    // FIXME: This is not good - we can't do this during initialization
+    if (isInitialized) {
+        sink->OnAttached();
+    }
 }
 
 //
@@ -112,7 +135,10 @@ void LogManager::AddSink(LogSink *sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
-    sink->OnAttached();
+    // FIXME: This is not good - we can't do this during initialization
+    if (isInitialized) {
+        sink->OnAttached();
+    }
 }
 
 //
@@ -139,9 +165,9 @@ void LogManager::IterateSinks(const SinkDelegate &delegate) {
     }
 }
 
-void LogManager::IterateCache(const CacheDelegate &delegate) {
+void LogManager::IterateCache(const LogCache::CachedEventDelgate &delegate) {
     // FIXME: This should basically just forward to the log-cache - we just don't want to expose the cache to the outside world..
-    // cache.Iterate(delegate);
+    cache->Iterate(delegate);
 }
 
 //

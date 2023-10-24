@@ -29,13 +29,13 @@ namespace gnilk {
     class LogManager {
         friend LogSink;
     public:
-        using CacheDelegate = std::function<void(const LogEvent &event)>;
         using SinkDelegate = std::function<void(LogSink *)>;
     public:
         virtual ~LogManager();
         static LogManager &Instance();
 
     public:
+        void Reset();
         void Initialize();
         Log::Ref GetOrAddLog(const std::string &name);
         Log::Ref GetExistingLog(const std::string &name);
@@ -53,7 +53,7 @@ namespace gnilk {
 
         void SendToSinks();
     protected:
-        void IterateCache(const CacheDelegate &);
+        void IterateCache(const LogCache::CachedEventDelgate &);
 
     private:
         LogManager() = default;
