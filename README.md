@@ -28,10 +28,10 @@ Plus have it flexible, portable and somewhat nice...
 ## TODO List
 ```text
 ! LogCache, cache up lines and when a sink attach send them all (default/base impl) to the sink
-- Review the Reset function -> it's nice for unit-testing but perhaps not needed...
+! Review the Reset function -> it's nice for unit-testing but perhaps not needed...
 - LogSink/LogCache, add ability to just have the last X number of cached entries...
-- Enable/Disable sink's
-- LogLevel for Log's - not just sinks (assume a Sink is configured for everything, but from modules XYZ I just want Errors)
+! Enable/Disable sink's
+! LogLevel for Log's - not just sinks (assume a Sink is configured for everything, but from modules XYZ I just want Errors)
 - Add git workflow
  
 ```
