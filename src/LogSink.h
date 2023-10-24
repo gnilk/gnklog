@@ -40,7 +40,7 @@ namespace gnilk {
 
         }
         virtual bool Open() {
-            return false;
+            return true;
         };
         virtual int Write(const LogEvent &logEvent) {
             return -1;

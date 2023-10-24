@@ -7,10 +7,17 @@
 
 using namespace gnilk;
 
+//
+// Default implementation is to iterate the complete cache and empty it..
+//
 void LogSink::OnAttached() {
-    LogManager::Instance().IterateCache([this](const LogEvent &event) -> void {
-        if (!WithinRange(event.Level())) return;
-        Write(event);
+    LogManager::Instance().IterateCache([this](const LogEvent &event) -> bool {
+        if (WithinRange(event.Level())) {
+            if (Write(event) < 0) {
+                return false;
+            }
+        }
+        return true;
     });
 }
 
