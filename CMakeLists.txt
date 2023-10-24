@@ -35,6 +35,7 @@ list(APPEND src src/logger.h)       ## <- old header
 
 list(APPEND src src/gnklog.cpp src/gnklog.h)
 list(APPEND src src/Log.cpp src/Log.h)
+list(APPEND src src/LogCache.cpp src/LogCache.h)
 list(APPEND src src/LogCore.cpp src/LogCore.h)
 list(APPEND src src/LogConsoleSink.cpp src/LogConsoleSink.h)
 list(APPEND src src/LogEvent.cpp src/LogEvent.h)
@@ -46,6 +47,7 @@ list(APPEND src src/LogManager.cpp src/LogManager.h)
 
 # unit test source code
 list(APPEND src_utest src/utests/test_gnklog.cpp)
+list(APPEND src_utest src/utests/test_logcache.cpp)
 
 # library/artifact declaration
 add_library(gnklog_utest SHARED ${src} ${src_utest})
