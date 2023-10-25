@@ -9,12 +9,12 @@ using namespace gnilk;
 LogFileSink::~LogFileSink() {
     Close();
 }
-void LogFileSink::Initialize(const std::vector<std::string> &args) {
+void LogFileSink::Initialize(const std::vector<std::string_view> &args) {
     ParseArgs(args);
     OpenLogFile();
 }
 
-void LogFileSink::ParseArgs(const std::vector<std::string> &args) {
+void LogFileSink::ParseArgs(const std::vector<std::string_view> &args) {
     for(size_t i=0;i<args.size();i++) {
         if (args[i] == "autoflush") {
             bFlushOnWrite = true;
