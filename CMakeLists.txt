@@ -49,6 +49,7 @@ list(APPEND src src/LogSink.cpp src/LogSink.h)
 # unit test source code
 list(APPEND src_utest src/utests/test_gnklog.cpp)
 list(APPEND src_utest src/utests/test_logcache.cpp)
+list(APPEND src_utest src/utests/test_logger.cpp)
 
 # library/artifact declaration
 add_library(gnklog_utest SHARED ${src} ${src_utest})
