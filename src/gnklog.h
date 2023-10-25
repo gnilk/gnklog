@@ -34,7 +34,7 @@ namespace gnilk {
         static void Initialize();
 
         // Log functionality
-        static ILogger::Ref GetLogger(const std::string &name);
+        static ILogger* GetLogger(const std::string &name);
         static Log::Ref GetLoggerRef(const std::string &name);
         static void DisableLogger(const std::string &name);
         static void EnableLogger(const std::string &name);
