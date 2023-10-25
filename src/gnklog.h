@@ -26,6 +26,8 @@ namespace gnilk {
     // The 'LogManager' (lack of better name for now) is the hidden internal core - does all the heavy lifting.
     class Logger {
     public:
+        using ILogger = Log;
+    public:
         Logger() = default;
         virtual ~Logger() = default;
 
@@ -33,7 +35,7 @@ namespace gnilk {
 
         // Log functionality
         static ILogger::Ref GetLogger(const std::string &name);
-        static ILogger *GetLoggerPtr(const std::string &name);
+        static Log::Ref GetLoggerRef(const std::string &name);
         static void DisableLogger(const std::string &name);
         static void EnableLogger(const std::string &name);
         static void DisableAllLoggers();

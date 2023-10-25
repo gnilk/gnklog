@@ -12,7 +12,15 @@ void Logger::Initialize() {
 }
 
 // New interface - returns shared ptr...
-ILogger::Ref Logger::GetLogger(const std::string &name) {
+ILogger* Logger::GetLogger(const std::string &name) {
+    auto instance = GetLoggerRef(name);
+    if (instance == nullptr) {
+        return nullptr;
+    }
+    return instance.get();
+}
+// This is the old interface - not encouraged...
+Log::Ref Logger::GetLoggerRef(const std::string &name) {
     return LogManager::Instance().GetOrAddLog(name);
 }
 
@@ -97,17 +105,6 @@ void Logger::EnableAllSinks() {
         sink->SetEnabled(true);
         return true;
     });
-}
-
-
-
-// This is the old interface - not encouraged...
-ILogger* Logger::GetLoggerPtr(const std::string &name) {
-    auto instance = GetLogger(name);
-    if (instance == nullptr) {
-        return nullptr;
-    }
-    return instance.get();
 }
 
 
