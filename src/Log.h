@@ -127,6 +127,10 @@ namespace gnilk {
         bool isEnabled = true;
         LogLevel logLevelThreshold = LogLevel::kNone;   // Everything, no threshold
     };
+
+    // Legacy - for now...
+    using ILogger = Log;
+
 }
 
 

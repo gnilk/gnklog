@@ -16,7 +16,7 @@ namespace gnilk {
         LogFileSink() : LogSink("filesink") {}
         virtual ~LogFileSink();
 
-        void Initialize(const std::vector<std::string> &args) override;
+        void Initialize(const std::vector<std::string_view> &args) override;
 
 
         static LogSink::Ref Create();
@@ -26,7 +26,7 @@ namespace gnilk {
         void Close() override;
 
     protected:
-        void ParseArgs(const std::vector<std::string> &args);
+        void ParseArgs(const std::vector<std::string_view> &args);
         void OpenLogFile();
     private:
         bool bAppend = false;

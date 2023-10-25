@@ -45,7 +45,9 @@ namespace gnilk {
 
         // Sink functionality
         static void AddSink(LogSink::Ref sink, const std::string &name);
+        static void AddSink(LogSink::Ref sink, const std::string &name, const std::vector<std::string_view> &argv);
         static void AddSink(LogSink *sink, const std::string &name);
+        static void AddSink(LogSink *sink, const std::string &name, int argc, const char *argv[]);
         static bool RemoveSink(const std::string &name);
         static void SetAllSinkDebugLevel(LogLevel newDebugLevel);
         static void DisableSink(const std::string &name);
