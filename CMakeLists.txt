@@ -24,9 +24,11 @@ endif()
 # Compile the bundled version of fmt
 #
 list(APPEND fmt_src src/ext/fmt/format.cc)
-add_library(fmt STATIC ${fmt_src})
-target_compile_options(fmt PUBLIC -fPIC)
-target_include_directories(fmt PUBLIC src/ext)
+
+# note: name is not fmt because it will clash with other projects importing this library
+add_library(gnk_log_fmt STATIC ${fmt_src})
+target_compile_options(gnk_log_fmt PUBLIC -fPIC)
+target_include_directories(gnk_log_fmt PUBLIC src/ext)
 
 
 
@@ -64,9 +66,9 @@ endif()
 
 target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow)
 target_include_directories(gnklog PUBLIC ${include_dirs})
-target_link_libraries(gnklog options fmt)
+target_link_libraries(gnklog options gnk_log_fmt)
 
 # unit test
 target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wno-unused-parameter)
 target_include_directories(gnklog_utest PUBLIC ${include_dirs})
-target_link_libraries(gnklog_utest options fmt)
+target_link_libraries(gnklog_utest options gnk_log_fmt)
