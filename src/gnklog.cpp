@@ -58,9 +58,20 @@ void Logger::DisableAllLoggers() {
 void Logger::AddSink(LogSink::Ref sink, const std::string &name) {
     LogManager::Instance().AddSink(sink, name);
 }
+void Logger::AddSink(LogSink::Ref sink, const std::string &name, const std::vector<std::string_view> &argv) {
+    sink->Initialize(argv);
+    AddSink(sink,name);
+}
+
 void Logger::AddSink(LogSink *sink, const std::string &name) {
     LogManager::Instance().AddSink(sink, name);
 }
+
+void Logger::AddSink(LogSink *sink, const std::string &name, int argc, const char *argv[]) {
+    sink->Initialize(argc, argv);
+    AddSink(sink, name);
+}
+
 
 bool Logger::RemoveSink(const std::string &name) {
     return LogManager::Instance().RemoveSink(name);
