@@ -12,7 +12,7 @@ void Logger::Initialize() {
 }
 
 // New interface - returns shared ptr...
-ILogger* Logger::GetLogger(const std::string &name) {
+Logger::ILogger* Logger::GetLogger(const std::string &name) {
     auto instance = GetLoggerRef(name);
     if (instance == nullptr) {
         return nullptr;

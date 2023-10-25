@@ -33,9 +33,10 @@ namespace gnilk {
 
         static void Initialize();
 
-        // Log functionality
+        // FIXME: I should really look at these..
         static ILogger* GetLogger(const std::string &name);
         static Log::Ref GetLoggerRef(const std::string &name);
+
         static void DisableLogger(const std::string &name);
         static void EnableLogger(const std::string &name);
         static void DisableAllLoggers();
