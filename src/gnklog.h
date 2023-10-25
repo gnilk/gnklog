@@ -16,6 +16,8 @@
 #include "LogCore.h"
 #include "LogEvent.h"
 #include "LogSink.h"
+#include "LogConsoleSink.h"
+#include "LogFileSink.h"
 
 namespace gnilk {
 
