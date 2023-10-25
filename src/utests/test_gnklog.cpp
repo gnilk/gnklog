@@ -14,17 +14,16 @@
 
 using namespace gnilk;
 extern "C" {
-DLL_EXPORT int test_logger(ITesting *t);
-DLL_EXPORT int test_logger_exit(ITesting *t);
-DLL_EXPORT int test_logger_debug(ITesting *t);
-DLL_EXPORT int test_logger_debugref(ITesting *t);
+DLL_EXPORT int test_gnklog(ITesting *t);
+DLL_EXPORT int test_gnklog_exit(ITesting *t);
+DLL_EXPORT int test_gnklog_debug(ITesting *t);
 }
 
-DLL_EXPORT int test_logger(ITesting *t) {
+DLL_EXPORT int test_gnklog(ITesting *t) {
     return kTR_Pass;
 }
 
-DLL_EXPORT int test_logger_exit(ITesting *t) {
+DLL_EXPORT int test_gnklog_exit(ITesting *t) {
     auto logger = Logger::GetLogger("test2");
 
     logger->Debug("2 mamma: %d, %s", 4, "world");
@@ -39,7 +38,7 @@ DLL_EXPORT int test_logger_exit(ITesting *t) {
     return kTR_Pass;
 }
 
-DLL_EXPORT int test_logger_debug(ITesting *t) {
+DLL_EXPORT int test_gnklog_debug(ITesting *t) {
 
     auto logger = Logger::GetLogger("test");
 
