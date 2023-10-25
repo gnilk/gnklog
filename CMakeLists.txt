@@ -6,7 +6,8 @@ set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "")
 set(CMAKE_OSX_SYSROOT /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk)
 
 
-set(CMAKE_CXX_STANDARD 17)
+# I just want a small set of features (field initializers) and perhaps change some stuff to use std:span as well
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -65,11 +66,11 @@ endif()
 
 
 
-target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow)
+target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow -Wpedantic)
 target_include_directories(gnklog PUBLIC ${include_dirs})
 target_link_libraries(gnklog options gnk_log_fmt)
 
 # unit test
-target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wno-unused-parameter)
+target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter)
 target_include_directories(gnklog_utest PUBLIC ${include_dirs})
 target_link_libraries(gnklog_utest options gnk_log_fmt)
