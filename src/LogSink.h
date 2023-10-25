@@ -43,7 +43,7 @@ namespace gnilk {
             logLevelThreshold = newThreshold;
         }
 
-        virtual void Initialize([[maybe_unused]] const std::vector<const std::string &> &args) {
+        virtual void Initialize([[maybe_unused]] const std::vector<std::string> &args) {
 
         }
 
