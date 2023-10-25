@@ -32,7 +32,7 @@ namespace gnilk {
             isEnabled = newIsEnabled;
         }
 
-        const std::string &GetName() {
+        virtual const std::string &GetName() {
             return name;
         };
 
@@ -46,15 +46,18 @@ namespace gnilk {
         virtual void Initialize([[maybe_unused]] const std::vector<const std::string &> &args) {
 
         }
+
         virtual bool Open() {
             return true;
         };
+
         virtual int Write(const LogEvent &logEvent) {
             return -1;
         };
 
         virtual void Flush() {  };
         virtual void Close() {  };
+
     protected:
         //
         // We got attached, this will require a bit more logic..
