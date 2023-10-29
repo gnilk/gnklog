@@ -117,7 +117,6 @@ namespace gnilk {
 
         explicit Log(const std::string &logName);
         void Initialize();
-        void GenerateAndSendEventData(LogEvent &outEvent, LogLevel level) const;
         __inline bool WithinRange(LogLevel msgLevel) const {
             return ((msgLevel >= logLevelThreshold)?true: false);
         }

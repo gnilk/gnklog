@@ -99,31 +99,52 @@ void LogEvent::ComposeReportString() {
 #endif
 }
 
-//
-// Writes a log event to the pipe
-// Called by Log::Debug BEFORE the string is formatted
-//
-size_t LogEvent::Write() {
+template<typename T>
+T ptrOffset(void *basePtr, int32_t offset) {
+    static_assert(std::is_pointer<T>());
+    return (T )(reinterpret_cast<unsigned char *>(basePtr) + offset);
+}
 
-    LogEvent::EventStreamMessage msg;
+//
+// Many will call 'Write' but only one will call read - so it is important that the
+// write is atomic in nature..
+//
+size_t LogEvent::Write(const std::string &dbgMessage) {
+
+
+
+    // This the amount we need for the complete message, including string and terminating zero
+    size_t nBytesTotal = sizeof(LogEvent::EventStreamMessage) + dbgMessage.length() + 1;
+
+    // This is the buffer holding the serialized event + message
+    auto ptrBuffer = alloca(nBytesTotal);
+    if (ptrBuffer == nullptr) {
+        return 0;
+    }
+    // Reset the buffer
+    memset(ptrBuffer, 0, nBytesTotal);
+    auto msg = static_cast<LogEvent::EventStreamMessage *>(ptrBuffer);
 
     // Copy over everything to a message - for serialization
-    msg.version = 0x01;
-    msg.timeStamp = timeStamp;
-    msg.idSenderThread = idSenderThread;
-    msg.level = level;
-    memset(msg.sender, 0, LOG_MAX_NAME_LEN);
-    strncpy(msg.sender, sender.c_str(), LOG_MAX_NAME_LEN);
+    msg->version = 0x01;
+    msg->timeStamp = timeStamp;
+    msg->idSenderThread = idSenderThread;
+    msg->level = level;
+    msg->messageLength = dbgMessage.size();
+    strncpy(msg->sender, sender.c_str(), LOG_MAX_NAME_LEN);
+
+    auto ptrString = ptrOffset<char *>(ptrBuffer, sizeof(LogEvent::EventStreamMessage));
+    strncpy(ptrString, dbgMessage.c_str(), dbgMessage.size());
 
     // Write it over the event pipe..
     auto &eventPipe = LogManager::Instance().GetLogEventPipe();
-    auto res = eventPipe.Write(&msg, sizeof(msg));
+    //auto res = eventPipe.Write(&msg, sizeof(msg));
+    auto res = eventPipe.Write(ptrBuffer, nBytesTotal);
 
     if (res<0) {
-        perror("LogEvent::Write");
+        perror("LogEvent::Write::write");
         return 0;
     }
-
     return res;
 }
 
@@ -145,48 +166,39 @@ size_t LogEvent::Read() {
     sender = std::string(msg.sender);
     level = msg.level;
 
-    if (!ReadMsgString()) {
-        return 0;
+    auto msgBuffer = (char *)alloca(msg.messageLength+1);
+    memset(msgBuffer, 0, msg.messageLength + 1);
+    int res2 = eventPipe.Read(msgBuffer, msg.messageLength + 1);
+    if (res2 < 0) {
+        return -1;
     }
+    res += res2;
+
+    msgString = std::string(msgBuffer);
 
     return res;
 }
 
-size_t LogEvent::WriteMsgString(const char *str) {
-    auto &eventPipe = LogManager::Instance().GetLogEventPipe();
-    auto result = fprintf(eventPipe.GetWriteStream(), "%s", str);
-    fflush(eventPipe.GetWriteStream());
-    return result;
-}
-
-size_t LogEvent::WriteMsgString(const std::string &str) {
-    auto &eventPipe = LogManager::Instance().GetLogEventPipe();
-    auto result = fprintf(eventPipe.GetWriteStream(), "%s", str.c_str());
-    fflush(eventPipe.GetWriteStream());
-    return result;
-}
-
-
 //
 // Reads the actual formatted string off the pipe..
 //
-size_t LogEvent::ReadMsgString() {
-
-    auto &eventPipe = LogManager::Instance().GetLogEventPipe();
-
-    msgString.clear();
-
-    int32_t res;
-    uint8_t ch;
-
-    while((res = eventPipe.Read(&ch, 1)) != 0) {
-        if (res < 0) {
-            perror("LogEvent::Read");
-            return 0;
-        }
-        msgString += ch;
-    }
-
-    return msgString.length();
-}
+//size_t LogEvent::ReadMsgString() {
+//
+//    auto &eventPipe = LogManager::Instance().GetLogEventPipe();
+//
+//    msgString.clear();
+//
+//    int32_t res;
+//    uint8_t ch;
+//
+//    while((res = eventPipe.Read(&ch, 1)) != 0) {
+//        if (res < 0) {
+//            perror("LogEvent::Read");
+//            return 0;
+//        }
+//        msgString += ch;
+//    }
+//
+//    return msgString.length();
+//}
 

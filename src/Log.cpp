@@ -28,18 +28,14 @@ Log::Ref Log::Create(const std::string &logName) {
 }
 
 
-void Log::GenerateAndSendEventData(LogEvent &outEvent, LogLevel level) const {
-    outEvent.timeStamp = LogClock::now();
-    outEvent.level = level;
-    outEvent.idSenderThread = std::this_thread::get_id();
-    outEvent.sender = name;
-    outEvent.Write();
-}
 
 void Log::SendLogMessage(LogLevel level, const std::string &dbgMsg) const {
-    LogEvent logEvent;
-    GenerateAndSendEventData(logEvent, level);
-    logEvent.WriteMsgString(dbgMsg);
+    LogEvent logEvent(level);
+    logEvent.timeStamp = LogClock::now();
+    logEvent.idSenderThread = std::this_thread::get_id();
+    logEvent.sender = name;
+    logEvent.Write(dbgMsg);
+
     LogManager::Instance().SendToSinks();
 }
 

@@ -21,6 +21,11 @@ namespace gnilk {
         friend LogManager;
     protected:
 
+        //
+        // This struct is used to pass the LogEvent between the loggers and the sink handling
+        // The LogEvent must be passed as an atomic operation - single write - thus we create a buffer
+        // to hold the full event...
+        //
 #pragma pack(push, 1)
         struct EventStreamMessage {
             uint8_t version = 0;
@@ -28,6 +33,8 @@ namespace gnilk {
             std::thread::id idSenderThread = {};
             LogLevel level = kDebug;
             char sender[LOG_MAX_NAME_LEN] = {};
+            uint16_t messageLength = 0;
+            // Message follows - the buffer is allocated including the message length
         };
 #pragma pack(pop)
 
@@ -64,11 +71,11 @@ namespace gnilk {
         }
 
     protected:
-        size_t Write();     // FIXME: Rename -> WriteIPC    ??
+        size_t Write(const std::string &dbgMessage);
         size_t Read();      // FIXME: Rename -> ReadIPC     ??
-        size_t WriteMsgString(const char *str);
-        size_t WriteMsgString(const std::string &str);
-        size_t ReadMsgString();
+//        size_t WriteMsgString(const char *str);
+//        size_t WriteMsgString(const std::string &str);
+//        size_t ReadMsgString();
 
     private:
         void ComposeReportString();
