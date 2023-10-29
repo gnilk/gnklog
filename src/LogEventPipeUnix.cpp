@@ -39,8 +39,6 @@ bool LogEventPipeUnix::Open() {
     // Associate file-descriptors and create streams
     readfd = pipefd[0];
     writefd = pipefd[1];
-    readStream = fdopen(readfd, "r");
-    writeStream = fdopen(writefd, "w");
     return true;
 }
 
@@ -48,8 +46,6 @@ void LogEventPipeUnix::Close() {
     if (!isOpen) {
         return;
     }
-    fclose(readStream);
-    fclose(writeStream);
     close(readfd);
     close(writefd);
     isOpen = false;

@@ -19,21 +19,11 @@ namespace gnilk {
         int32_t Write(const void *data, size_t szBytes) override;
         int32_t Read(void *dstBuffer, size_t maxBytes) override;
 
-        FILE *GetWriteStream() override {
-            return writeStream;
-        }
-        FILE *GetReadStream() override {
-            return readStream;
-        }
-
     private:
         bool isOpen = false;
         int pipefd[2] = {};
         int writefd = -1;
         int readfd = -1;
-
-        FILE *writeStream = nullptr;
-        FILE *readStream = nullptr;
     };
 
 }

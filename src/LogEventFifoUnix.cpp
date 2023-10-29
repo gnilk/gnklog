@@ -27,7 +27,7 @@ bool LogEventFifoUnix::Open() {
     auto pid = getpid();
     fifoname = fifoBaseName + "_" + std::to_string(pid);
 
-    // if it exists - remove it (I don't know...)
+    // if it exists - remove it - as it ought to be a left over from an old process or someone restarted the logger
     if (std::filesystem::exists(fifoname)) {
         std::filesystem::remove(fifoname);
     }
@@ -47,14 +47,6 @@ bool LogEventFifoUnix::Open() {
         return false;
     }
 
-    // Also open it as a file-stream, we need to supply it to vfprintf in the writer, that's the whole purpose
-    fifoStream = fopen(fifoname.c_str(), "rw+");
-    if (fifoStream == nullptr) {
-        close(fifofd);
-        perror("fopen_write");
-        return false;
-    }
-
     // All good - tag and bag em...
     isOpen = true;
     return true;
@@ -65,7 +57,6 @@ void LogEventFifoUnix::Close() {
         return;
     }
 
-    fclose(fifoStream);
     close(fifofd);
 
     // remove the remaining fifo file
@@ -81,14 +72,11 @@ int32_t LogEventFifoUnix::Write(const void *data, size_t szBytes) {
         return -1;
     }
 
-    auto res = fwrite(data, szBytes, 1, fifoStream);
-    if (res == 0) {
+    auto res =  (int32_t)write(rwfd, data, szBytes);
+    if (res < 0) {
         perror("LogEventFifoUnix::Write");
-        return -1;
     }
-    fflush(fifoStream);
-
-    return (int32_t)res;
+    return res;
 }
 
 int32_t LogEventFifoUnix::Read(void *dstBuffer, size_t maxBytes) {

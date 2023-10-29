@@ -17,12 +17,6 @@ namespace gnilk {
         int32_t Write(const void *data, size_t szBytes) override;
         int32_t Read(void *dstBuffer, size_t maxBytes) override;
 
-        FILE *GetWriteStream() override {
-            return fifoStream;
-        }
-        FILE *GetReadStream() override {
-            return fifoStream;
-        }
     private:
         bool isOpen = false;
 
@@ -30,10 +24,6 @@ namespace gnilk {
 
         int fifofd = -1;
         int rwfd = -1;
-
-        FILE *fifoStream = nullptr;
-
-
 
     };
 }
