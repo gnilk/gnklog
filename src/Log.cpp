@@ -35,11 +35,11 @@ void Log::SendLogMessage(LogLevel level, const std::string &dbgMsg) const {
     logEvent.idSenderThread = std::this_thread::get_id();
     logEvent.sender = name;
 
-    auto &ipc = LogManager::Instance().GetIPC();
-    ipc.WriteEvent(logEvent, dbgMsg);
+    auto ipc = LogManager::Instance().GetIPC();
+    ipc->WriteEvent(logEvent, dbgMsg);
 
 
     // FIXME: should be removed
-    LogManager::Instance().SendToSinks();
+    //LogManager::Instance().SendToSinks();
 }
 
