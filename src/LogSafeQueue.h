@@ -28,6 +28,10 @@ namespace gnilk {
             c.notify_one();
         }
 
+        void stop() {
+            c.notify_all();
+        }
+
         bool empty() const {
             std::unique_lock<std::mutex> lock(m);
             return q.empty();
@@ -35,8 +39,10 @@ namespace gnilk {
 
         bool wait(uint64_t durationMs) {
             std::unique_lock<std::mutex> lock(m);
-            if (c.wait_for(lock, DurationMS(durationMs)) == std::cv_status::timeout) {
-                return false;
+            if(q.empty()) {
+                if (c.wait_for(lock, DurationMS(durationMs)) == std::cv_status::timeout) {
+                    return false;
+                }
             }
             return true;
         }
@@ -45,10 +51,10 @@ namespace gnilk {
         // If the queue is empty, wait till a element is avaiable.
         T pop(void) {
             std::unique_lock<std::mutex> lock(m);
-            while (q.empty()) {
-                // release lock as long as the wait and reaquire it afterwards.
+            while(q.empty()) {
                 c.wait(lock);
             }
+
             T val = q.front();
             q.pop();
             return val;
