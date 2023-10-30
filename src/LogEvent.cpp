@@ -105,13 +105,12 @@ T ptrOffset(void *basePtr, int32_t offset) {
     return (T )(reinterpret_cast<unsigned char *>(basePtr) + offset);
 }
 
+
 //
 // Many will call 'Write' but only one will call read - so it is important that the
 // write is atomic in nature..
 //
 size_t LogEvent::Write(const std::string &dbgMessage) {
-
-
 
     // This the amount we need for the complete message, including string and terminating zero
     size_t nBytesTotal = sizeof(LogEvent::EventStreamMessage) + dbgMessage.length() + 1;
