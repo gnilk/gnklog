@@ -32,7 +32,11 @@ int32_t LogIPCQueue::ReadEvent(LogEvent &outEvent) {
         return -1;
     }
     auto msg = queue.pop();
-    outEvent = msg.event;
-    outEvent.msgString = msg.dbgMessage;
+    // stopped??
+    if (!msg.has_value()) {
+        return -1;
+    }
+    outEvent = msg->event;
+    outEvent.msgString = msg->dbgMessage;
     return 1;
 }

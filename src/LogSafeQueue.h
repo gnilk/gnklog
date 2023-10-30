@@ -8,6 +8,7 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <optional>
 
 namespace gnilk {
 
@@ -16,10 +17,11 @@ namespace gnilk {
     public:
         using DurationMS = std::chrono::duration<uint64_t, std::ratio<1, 1000> >;
     public:
-        SafeQueue(void)
-                : q(), m(), c() {}
-
-        ~SafeQueue(void) {}
+        SafeQueue() = default;
+        virtual ~SafeQueue() {
+            // In case someone is waiting...
+            c.notify_one();
+        }
 
         // Add an element to the queue.
         void push(T t) {
@@ -49,10 +51,14 @@ namespace gnilk {
 
         // Get the "front"-element.
         // If the queue is empty, wait till a element is avaiable.
-        T pop(void) {
+        std::optional<T> pop(void) {
             std::unique_lock<std::mutex> lock(m);
             while(q.empty()) {
                 c.wait(lock);
+            }
+            // Stopped?
+            if (q.empty()) {
+                return {};
             }
 
             T val = q.front();
@@ -61,9 +67,9 @@ namespace gnilk {
         }
 
     private:
-        std::queue<T> q;
-        mutable std::mutex m;
-        std::condition_variable c;
+        std::queue<T> q = {};
+        mutable std::mutex m = {};
+        std::condition_variable c = {};
     };
 
 }

@@ -62,7 +62,7 @@ public: // my mock functions
         if (logItems.empty()) {
             return lastItem;
         }
-        lastItem = logItems.pop();
+        lastItem = *logItems.pop();
         return lastItem;
     }
 private:
