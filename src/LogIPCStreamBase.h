@@ -29,11 +29,6 @@ namespace gnilk {
 
     public:
 
-        virtual bool Open() {
-            return false;
-        }
-        virtual void Close() {}
-
         int32_t WriteEvent(const LogEvent &event, const std::string &dbgMessage) override;
         int32_t ReadEvent(LogEvent &outEvent) override;
 
