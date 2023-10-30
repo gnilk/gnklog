@@ -47,6 +47,7 @@ namespace gnilk {
     public:
         void Reset();
         void Initialize();
+        void Close();
         Log::Ref GetOrAddLog(const std::string &name);
         Log::Ref GetExistingLog(const std::string &name);
         void IterateLogs(const LogDelegate &);
@@ -58,13 +59,17 @@ namespace gnilk {
         bool RemoveSink(const std::string &name);
         void IterateSinks(const SinkDelegate &);
 
-        LogIPCBase &GetIPC() {
+        LogIPCBase::Ref GetIPC() {
             return ipcHandler;
+        }
+        void SetIPC(const LogIPCBase::Ref &ipc) {
+            ipcHandler = ipc;
         }
 
         void SendToSinks();
     protected:
         void IterateCache(const LogCache::CachedEventDelgate &);
+        void SinkThread();
 
     private:
         LogManager() = default;
@@ -76,12 +81,17 @@ namespace gnilk {
 
 //        LogEventPipeUnix eventPipe;
 //        LogIPCFifoUnix ipcHandler;
-        LogIPCQueue ipcHandler;
+        LogIPCQueue::Ref ipcHandler = nullptr;
+
         LogCache::Ref cache = {};
         std::mutex instLock;
         std::mutex sinkLock;
         std::unordered_map<std::string, LogInstance::Ref> logInstances;
         std::vector<LogSinkInstance::Ref> sinks;
+
+
+        bool bQuitSinkThread = false;
+        std::thread sinkThread;
 
         int eventMsgWritePipe = -1;
         int eventMsgReadPipe = -1;

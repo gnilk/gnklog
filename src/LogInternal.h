@@ -10,10 +10,13 @@
 #include <stdio.h>
 
 #include "LogSink.h"
+#include <memory>
 
 namespace gnilk {
 
     class LogIPCBase {
+    public:
+        using Ref = std::shared_ptr<LogIPCBase>;
     public:
         LogIPCBase() = default;
         virtual ~LogIPCBase() = default;
@@ -22,6 +25,10 @@ namespace gnilk {
             return true;
         }
         virtual void Close() {}
+
+        // Must be overridden otherwise the system will deadlock
+        // return true if there is data to be read false if no data is available
+        virtual bool Available() { return false; }
 
         // Returns
         //       ok > 0

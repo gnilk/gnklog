@@ -27,7 +27,23 @@ LogManager &LogManager::Instance() {
 }
 
 LogManager::~LogManager() {
+    Close();
+}
+
+void LogManager::Close() {
+    // This can happen if someone calls close explicitly
+    if (!isInitialized) {
+        return;
+    }
     // event pipe will close through DTOR
+    std::lock_guard<std::mutex> lock(instLock);
+    ipcHandler->Close();
+    bQuitSinkThread = true;
+    sinkThread.join();
+    cache->Clear();
+    sinks.clear();
+    logInstances.clear();
+    isInitialized = false;
 }
 
 // This will reset all data - mainly for unit-testing..
@@ -65,11 +81,22 @@ void LogManager::Initialize() {
 
     RegisterDefaultSinks();
 
-    if (!ipcHandler.Open()) {
-        exit(1);
+    // This should NOT happen - but let's check anyway...
+    if (ipcHandler == nullptr) {
+        ipcHandler = std::make_shared<LogIPCQueue>();
+        if (!ipcHandler->Open()) {
+            exit(1);
+        }
     }
 
     isInitialized = true;
+
+
+    sinkThread = std::thread([this]() {
+        SinkThread();
+    });
+
+
 }
 
 //
@@ -169,18 +196,30 @@ void LogManager::IterateCache(const LogCache::CachedEventDelgate &delegate) {
     cache->Iterate(delegate);
 }
 
+
+
+void LogManager::SinkThread() {
+
+    while(!bQuitSinkThread) {
+        SendToSinks();
+    }
+}
 //
 // This will forward all data to the log sinks
 //
 void LogManager::SendToSinks() {
+    auto ipc = LogManager::Instance().GetIPC();
+    if (!ipcHandler->Available()) {
+        return;
+    }
+
     std::lock_guard<std::mutex> lock(sinkLock);
 
     // Fetch next event from the cache
     auto logEvent = cache->Next();
 
-    auto &ipc = LogManager::Instance().GetIPC();
 
-    if (ipc.ReadEvent(*logEvent) < 0) {
+    if (ipc->ReadEvent(*logEvent) < 0) {
         // failed
         return;
     }
