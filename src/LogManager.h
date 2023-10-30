@@ -72,8 +72,8 @@ namespace gnilk {
         bool isInitialized = false;
         size_t cacheCapacity = GNILK_LOG_CACHE_CAPACITY;
 
-        LogEventPipeUnix eventPipe;
-//        LogEventFifoUnix eventPipe;
+//        LogEventPipeUnix eventPipe;
+        LogEventFifoUnix eventPipe;
 
         LogCache::Ref cache = {};
         std::mutex instLock;
