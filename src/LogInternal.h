@@ -17,6 +17,12 @@ namespace gnilk {
     public:
         LogIPCBase() = default;
         virtual ~LogIPCBase() = default;
+
+        virtual bool Open() {
+            return true;
+        }
+        virtual void Close() {}
+
         // Returns
         //       ok > 0
         //      nok < 0
