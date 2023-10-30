@@ -13,8 +13,8 @@
 
 #include "LogCore.h"
 #include "LogCache.h"
-#include "LogEventFifoUnix.h"
-#include "LogEventPipeUnix.h"
+#include "LogIPCFifoUnix.h"
+#include "LogIPCPipeUnix.h"
 #include "LogInstance.h"
 #include "LogInternal.h"
 #include "LogIPCStreamBase.h"
@@ -78,7 +78,7 @@ namespace gnilk {
         size_t cacheCapacity = GNILK_LOG_CACHE_CAPACITY;
 
 //        LogEventPipeUnix eventPipe;
-        LogEventFifoUnix ipcHandler;
+        LogIPCFifoUnix ipcHandler;
 
         LogCache::Ref cache = {};
         std::mutex instLock;

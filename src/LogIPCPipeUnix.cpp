@@ -10,19 +10,19 @@
 #include <unistd.h>
 #include <poll.h>
 
-#include "LogEventPipeUnix.h"
+#include "LogIPCPipeUnix.h"
 
 using namespace gnilk;
 
-LogEventPipeUnix::LogEventPipeUnix() {
+LogIPCPipeUnix::LogIPCPipeUnix() {
 
 }
 
-LogEventPipeUnix::~LogEventPipeUnix() {
+LogIPCPipeUnix::~LogIPCPipeUnix() {
     Close();
 }
 
-bool LogEventPipeUnix::Open() {
+bool LogIPCPipeUnix::Open() {
     if (isOpen) {
         return true;
     }
@@ -42,7 +42,7 @@ bool LogEventPipeUnix::Open() {
     return true;
 }
 
-void LogEventPipeUnix::Close() {
+void LogIPCPipeUnix::Close() {
     if (!isOpen) {
         return;
     }
@@ -51,7 +51,7 @@ void LogEventPipeUnix::Close() {
     isOpen = false;
 }
 
-int32_t LogEventPipeUnix::Write(const void *data, size_t szBytes) {
+int32_t LogIPCPipeUnix::Write(const void *data, size_t szBytes) {
     if (!isOpen) {
         return -1;
     }
@@ -63,7 +63,7 @@ int32_t LogEventPipeUnix::Write(const void *data, size_t szBytes) {
 
 }
 
-int32_t LogEventPipeUnix::Read(void *dstBuffer, size_t maxBytes) {
+int32_t LogIPCPipeUnix::Read(void *dstBuffer, size_t maxBytes) {
     if (!isOpen) {
         return -1;
     }
