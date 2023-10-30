@@ -6,8 +6,9 @@
 #define GNKLOG_LOGEVENTFIFOUNIX_H
 
 #include "LogInternal.h"
+#include "LogIPCStreamBase.h"
 namespace gnilk {
-    class LogEventFifoUnix : public LogIPCBase {
+    class LogEventFifoUnix : public LogIPCStreamBase {
     public:
         LogEventFifoUnix() = default;
         virtual ~LogEventFifoUnix() = default;

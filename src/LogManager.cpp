@@ -65,7 +65,7 @@ void LogManager::Initialize() {
 
     RegisterDefaultSinks();
 
-    if (!eventPipe.Open()) {
+    if (!ipcHandler.Open()) {
         exit(1);
     }
 
@@ -177,7 +177,13 @@ void LogManager::SendToSinks() {
 
     // Fetch next event from the cache
     auto logEvent = cache->Next();
-    logEvent->Read();                   // Read it from the underlying pipe
+
+    auto &ipc = LogManager::Instance().GetIPC();
+
+    if (ipc.ReadEvent(*logEvent) < 0) {
+        // failed
+        return;
+    }
     logEvent->ComposeReportString();    // pre-compose the report string...
 
     std::deque<std::future<int>> sinkReadyList;

@@ -7,10 +7,11 @@
 
 #include <memory>
 #include "LogInternal.h"
+#include "LogIPCStreamBase.h"
 
 namespace gnilk {
 
-    class LogEventPipeUnix : public LogIPCBase {
+    class LogEventPipeUnix : public LogIPCStreamBase {
     public:
         LogEventPipeUnix();
         virtual ~LogEventPipeUnix();

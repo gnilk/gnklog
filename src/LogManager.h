@@ -17,6 +17,7 @@
 #include "LogEventPipeUnix.h"
 #include "LogInstance.h"
 #include "LogInternal.h"
+#include "LogIPCStreamBase.h"
 #include "LogSink.h"
 
 
@@ -56,8 +57,12 @@ namespace gnilk {
         bool RemoveSink(const std::string &name);
         void IterateSinks(const SinkDelegate &);
 
-        LogIPCBase &GetLogEventPipe() {
-            return eventPipe;
+        LogIPCStreamBase &GetLogEventPipe() {
+            return ipcHandler;
+        }
+
+        LogIPCBase &GetIPC() {
+            return ipcHandler;
         }
 
         void SendToSinks();
@@ -73,7 +78,7 @@ namespace gnilk {
         size_t cacheCapacity = GNILK_LOG_CACHE_CAPACITY;
 
 //        LogEventPipeUnix eventPipe;
-        LogEventFifoUnix eventPipe;
+        LogEventFifoUnix ipcHandler;
 
         LogCache::Ref cache = {};
         std::mutex instLock;
