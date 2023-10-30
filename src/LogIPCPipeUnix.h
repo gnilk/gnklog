@@ -17,6 +17,8 @@ namespace gnilk {
         virtual ~LogIPCPipeUnix();
         bool Open() override;
         void Close() override;
+        // FIXME: Implement available!
+
         int32_t Write(const void *data, size_t szBytes) override;
         int32_t Read(void *dstBuffer, size_t maxBytes) override;
 

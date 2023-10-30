@@ -13,6 +13,8 @@ namespace gnilk {
         LogIPCFifoUnix() = default;
         virtual ~LogIPCFifoUnix() = default;
 
+        // FIXME: Implement available!
+
         bool Open() override;
         void Close() override;
         int32_t Write(const void *data, size_t szBytes) override;
