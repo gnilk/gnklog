@@ -40,7 +40,6 @@ namespace gnilk {
         static constexpr auto& GetLog = GetLogRef;
 
 
-
         static void DisableLogger(const std::string &name);
         static void EnableLogger(const std::string &name);
         static void DisableAllLoggers();
@@ -59,6 +58,8 @@ namespace gnilk {
         static void DisableAllSinks();
         static void EnableAllSinks();
 
+        //
+        static void Consume();
 
     };
 

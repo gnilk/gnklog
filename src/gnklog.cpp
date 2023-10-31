@@ -12,6 +12,14 @@ void Logger::Initialize() {
     LogManager::Instance().Initialize();
 }
 
+// New interface - returns shared ptr...
+Log::Ref Logger::GetLogRef(const std::string &name) {
+    // auto-initialize here...
+    Initialize();
+    return LogManager::Instance().GetOrAddLog(name);
+}
+
+
 // This is the old interface - not encouraged...
 Logger::ILogger* Logger::GetLogger(const std::string &name) {
     auto instance = GetLogRef(name);
@@ -21,10 +29,6 @@ Logger::ILogger* Logger::GetLogger(const std::string &name) {
     return instance.get();
 }
 
-// New interface - returns shared ptr...
-Log::Ref Logger::GetLogRef(const std::string &name) {
-    return LogManager::Instance().GetOrAddLog(name);
-}
 
 void Logger::DisableLogger(const std::string &name) {
     auto log = LogManager::Instance().GetExistingLog(name);
@@ -121,3 +125,6 @@ void Logger::EnableAllSinks() {
 }
 
 
+void Logger::Consume() {
+    LogManager::Instance().Consume();
+}
