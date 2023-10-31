@@ -7,20 +7,22 @@
 
 using namespace gnilk;
 
+
 void Logger::Initialize() {
     LogManager::Instance().Initialize();
 }
 
-// New interface - returns shared ptr...
+// This is the old interface - not encouraged...
 Logger::ILogger* Logger::GetLogger(const std::string &name) {
-    auto instance = GetLoggerRef(name);
+    auto instance = GetLogRef(name);
     if (instance == nullptr) {
         return nullptr;
     }
     return instance.get();
 }
-// This is the old interface - not encouraged...
-Log::Ref Logger::GetLoggerRef(const std::string &name) {
+
+// New interface - returns shared ptr...
+Log::Ref Logger::GetLogRef(const std::string &name) {
     return LogManager::Instance().GetOrAddLog(name);
 }
 
