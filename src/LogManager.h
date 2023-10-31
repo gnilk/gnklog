@@ -48,6 +48,13 @@ namespace gnilk {
         void Reset();
         void Initialize();
         void Close();
+        __inline bool IsInitialized() const {
+            return isInitialized;
+        }
+        __inline bool IsClosed() const {
+            return !isInitialized;
+        }
+
         Log::Ref GetOrAddLog(const std::string &name);
         Log::Ref GetExistingLog(const std::string &name);
         void IterateLogs(const LogDelegate &);

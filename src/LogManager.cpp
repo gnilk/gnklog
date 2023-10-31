@@ -22,7 +22,6 @@ using namespace gnilk;
 //
 LogManager &LogManager::Instance() {
     static LogManager glbManager;
-    glbManager.Initialize();
     return glbManager;
 }
 
@@ -37,9 +36,17 @@ void LogManager::Close() {
     }
     // event pipe will close through DTOR
     std::lock_guard<std::mutex> lock(instLock);
-    ipcHandler->Close();
+    // Quit the sink-thread
     bQuitSinkThread = true;
     sinkThread.join();
+
+    // Send any left-overs from the queue
+    SendToSinks();
+
+    // Close and clear internal stuff
+    ipcHandler->Close();
+    ipcHandler = nullptr;   // Must set this reference to null
+
     cache->Clear();
     sinks.clear();
     logInstances.clear();
@@ -50,6 +57,9 @@ void LogManager::Close() {
 // NOTE: Any sink registered as unmanaged will be left untouched - i.e. the instance will be dangling unless
 // the caller delete it!
 void LogManager::Reset() {
+
+    // Note: This should just be Close/Initialize from now on...
+
     if (!isInitialized) {
         Initialize();
         return;
@@ -199,11 +209,11 @@ void LogManager::IterateCache(const LogCache::CachedEventDelgate &delegate) {
 
 
 void LogManager::SinkThread() {
-
     while(!bQuitSinkThread) {
         SendToSinks();
     }
 }
+
 //
 // This will forward all data to the log sinks
 //
@@ -216,38 +226,39 @@ void LogManager::SendToSinks() {
     std::lock_guard<std::mutex> lock(sinkLock);
 
     // Fetch next event from the cache
-    auto logEvent = cache->Next();
+    while(ipcHandler->Available()) {
+        auto logEvent = cache->Next();
 
-
-    if (ipc->ReadEvent(*logEvent) < 0) {
-        // failed
-        return;
-    }
-    logEvent->ComposeReportString();    // pre-compose the report string...
-
-    std::deque<std::future<int>> sinkReadyList;
-
-    for(auto &sinkInstance : sinks) {
-        // This should not be problematic, except for maybe the unmanaged sink's which potentially could go out of
-        // scope while we do this...
-        auto sink = sinkInstance->GetSink();
-
-        // Don't even send it unless it is within the range...
-        if (!sink->WithinRange(logEvent->level)) {
-            continue;
+        if (ipc->ReadEvent(*logEvent) < 0) {
+            // failed
+            return;
         }
-        if (!sink->IsEnabled()) {
-            continue;
+        logEvent->ComposeReportString();    // pre-compose the report string...
+
+        std::deque<std::future<int>> sinkReadyList;
+
+        for (auto &sinkInstance: sinks) {
+            // This should not be problematic, except for maybe the unmanaged sink's which potentially could go out of
+            // scope while we do this...
+            auto sink = sinkInstance->GetSink();
+
+            // Don't even send it unless it is within the range...
+            if (!sink->WithinRange(logEvent->level)) {
+                continue;
+            }
+            if (!sink->IsEnabled()) {
+                continue;
+            }
+
+            auto future = std::async(&LogSink::Write, sink, *logEvent);
+            sinkReadyList.push_back(std::move(future));
         }
 
-        auto future = std::async(&LogSink::Write, sink, *logEvent);
-        sinkReadyList.push_back(std::move(future));
-    }
-
-    while(!sinkReadyList.empty()) {
-        auto future = std::move(sinkReadyList.front());
-        future.get();
-        sinkReadyList.pop_front();
+        while (!sinkReadyList.empty()) {
+            auto future = std::move(sinkReadyList.front());
+            future.get();
+            sinkReadyList.pop_front();
+        }
     }
 
 }
