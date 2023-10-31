@@ -10,23 +10,39 @@
 #include <stdio.h>
 
 #include "LogSink.h"
+#include <memory>
 
 namespace gnilk {
-    //
-    // Various classes for internal use...
-    //
+
     class LogIPCBase {
     public:
+        using Ref = std::shared_ptr<LogIPCBase>;
+    public:
+        LogIPCBase() = default;
+        virtual ~LogIPCBase() = default;
+
         virtual bool Open() {
-            return false;
+            return true;
         }
         virtual void Close() {}
-        virtual int32_t Write(const void *data, size_t szBytes) { return -1; }
-        virtual int32_t Read(void *dstBuffer, size_t maxBytes) { return -1; }
 
-        virtual FILE *GetWriteStream() { return nullptr; }
-        virtual FILE *GetReadStream() { return nullptr; }
+        // Must be overridden otherwise the system will deadlock
+        // return true if there is data to be read false if no data is available
+        virtual bool Available() { return false; }
+
+        // Returns
+        //       ok > 0
+        //      nok < 0
+        virtual int32_t WriteEvent(const LogEvent &event, const std::string &dbgMessage) { return false; }
+        virtual int32_t ReadEvent(LogEvent &outEvent) { return false; }
     };
+
+    template<typename T>
+    T ptrOffset(void *basePtr, int32_t offset) {
+        static_assert(std::is_pointer<T>());
+        return (T )(reinterpret_cast<unsigned char *>(basePtr) + offset);
+    }
+
 
     //
     // These classes are used to hold LogSink's in the LogManager class

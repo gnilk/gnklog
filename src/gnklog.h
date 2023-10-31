@@ -34,8 +34,11 @@ namespace gnilk {
         static void Initialize();
 
         // FIXME: I should really look at these..
+        static Log::Ref GetLogRef(const std::string &name);
         static ILogger* GetLogger(const std::string &name);
-        static Log::Ref GetLoggerRef(const std::string &name);
+
+        static constexpr auto& GetLog = GetLogRef;
+
 
         static void DisableLogger(const std::string &name);
         static void EnableLogger(const std::string &name);
@@ -55,6 +58,8 @@ namespace gnilk {
         static void DisableAllSinks();
         static void EnableAllSinks();
 
+        //
+        static void Consume();
 
     };
 

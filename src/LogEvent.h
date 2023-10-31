@@ -70,19 +70,16 @@ namespace gnilk {
             return msgString;
         }
 
-    protected:
-        size_t Write(const std::string &dbgMessage);
-        size_t Read();      // FIXME: Rename -> ReadIPC     ??
-//        size_t WriteMsgString(const char *str);
-//        size_t WriteMsgString(const std::string &str);
-//        size_t ReadMsgString();
-
+//    protected:
+//        size_t Write(const std::string &dbgMessage) const;
+//        size_t Read();
     private:
         void ComposeReportString();
 
     public:
         LogTimeStamp timeStamp;
         std::thread::id idSenderThread;
+        pid_t idSenderProc;
         std::string sender;
         LogLevel level = kDebug;
         std::string msgString;  // ONLY AVAILABLE ON AFTER READ

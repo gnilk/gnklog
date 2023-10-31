@@ -12,13 +12,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <poll.h>
-#include "LogEventFifoUnix.h"
+#include "LogIPCFifoUnix.h"
 
 using namespace gnilk;
 
 static std::string fifoBaseName= "/tmp/myfifo";
 
-bool LogEventFifoUnix::Open() {
+bool LogIPCFifoUnix::Open() {
     if (isOpen) {
         return true;
     }
@@ -52,7 +52,7 @@ bool LogEventFifoUnix::Open() {
     return true;
 }
 
-void LogEventFifoUnix::Close() {
+void LogIPCFifoUnix::Close() {
     if (!isOpen) {
         return;
     }
@@ -67,8 +67,24 @@ void LogEventFifoUnix::Close() {
     isOpen = false;
 }
 
-int32_t LogEventFifoUnix::Write(const void *data, size_t szBytes) {
+bool LogIPCFifoUnix::Available() {
+    struct pollfd pfd {
+            .fd = rwfd,
+            .events = POLLIN,
+            .revents = {},
+    };
+
+    // Non-blocking poll...
+    if (poll(&pfd, 1, 0)==1) {
+        return true;
+    }
+    return false;
+}
+
+
+int32_t LogIPCFifoUnix::Write(const void *data, size_t szBytes) {
     if (!isOpen) {
+        // Auto open here???
         return -1;
     }
 
@@ -76,25 +92,20 @@ int32_t LogEventFifoUnix::Write(const void *data, size_t szBytes) {
     if (res < 0) {
         perror("LogEventFifoUnix::Write");
     }
+    fsync(rwfd);
     return res;
 }
 
-int32_t LogEventFifoUnix::Read(void *dstBuffer, size_t maxBytes) {
+int32_t LogIPCFifoUnix::Read(void *dstBuffer, size_t maxBytes) {
     if (!isOpen) {
         return -1;
     }
-    struct pollfd pfd {
-            .fd = rwfd,
-            .events = POLLIN,
-            .revents = {},
-    };
-
-    if (poll(&pfd, 1, 0)==1) {
-        auto res = read(rwfd, dstBuffer, maxBytes);
-        if (res < 0) {
-            perror("LogEventFifoUnix::Read");
-        }
-        return res;
+    if (!Available()) {
+        return 0;
     }
-    return 0;
+    auto res = read(rwfd, dstBuffer, maxBytes);
+    if (res < 0) {
+        perror("LogEventFifoUnix::Read");
+    }
+    return res;
 }

@@ -2,18 +2,22 @@
 // Created by gnilk on 19.10.23.
 //
 
-#ifndef GNKLOG_LOGEVENTFIFOUNIX_H
-#define GNKLOG_LOGEVENTFIFOUNIX_H
+#ifndef GNKLOG_LOGIPCFIFOUNIX_H
+#define GNKLOG_LOGIPCFIFOUNIX_H
 
 #include "LogInternal.h"
+#include "LogIPCStreamBase.h"
 namespace gnilk {
-    class LogEventFifoUnix : public LogIPCBase {
+    class LogIPCFifoUnix : public LogIPCStreamBase {
     public:
-        LogEventFifoUnix() = default;
-        virtual ~LogEventFifoUnix() = default;
+        LogIPCFifoUnix() = default;
+        virtual ~LogIPCFifoUnix() = default;
 
         bool Open() override;
         void Close() override;
+        bool Available() override;
+
+
         int32_t Write(const void *data, size_t szBytes) override;
         int32_t Read(void *dstBuffer, size_t maxBytes) override;
 
@@ -29,4 +33,4 @@ namespace gnilk {
 }
 
 
-#endif //GNKLOG_LOGEVENTFIFOUNIX_H
+#endif //GNKLOG_LOGIPCFIFOUNIX_H

@@ -2,20 +2,23 @@
 // Created by gnilk on 19.10.23.
 //
 
-#ifndef GNKLOG_LOGEVENTPIPEUNIX_H
-#define GNKLOG_LOGEVENTPIPEUNIX_H
+#ifndef GNKLOG_LOGIPCPIPEUNIX_H
+#define GNKLOG_LOGIPCPIPEUNIX_H
 
 #include <memory>
 #include "LogInternal.h"
+#include "LogIPCStreamBase.h"
 
 namespace gnilk {
 
-    class LogEventPipeUnix : public LogIPCBase {
+    class LogIPCPipeUnix : public LogIPCStreamBase {
     public:
-        LogEventPipeUnix();
-        virtual ~LogEventPipeUnix();
+        LogIPCPipeUnix();
+        virtual ~LogIPCPipeUnix();
         bool Open() override;
         void Close() override;
+        bool Available() override;
+
         int32_t Write(const void *data, size_t szBytes) override;
         int32_t Read(void *dstBuffer, size_t maxBytes) override;
 
@@ -28,4 +31,4 @@ namespace gnilk {
 
 }
 
-#endif //GNKLOG_LOGEVENTPIPEUNIX_H
+#endif //GNKLOG_LOGIPCPIPEUNIX_H

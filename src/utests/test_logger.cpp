@@ -7,6 +7,8 @@
 #include <vector>
 #include <testinterface.h>
 #include "logger.h"
+#include <condition_variable>
+#include "LogSafeQueue.h"
 
 using namespace gnilk;
 extern "C" {
@@ -42,7 +44,7 @@ public:
                 .header = event.HeaderString(),
                 .string = event.MsgString(),
         };
-        logItems.push_back(item);
+        logItems.push(item);
         return 1;
     }
 
@@ -53,11 +55,20 @@ public:
 
     }
 public: // my mock functions
-    const LogItem &LastItem() {
-        return logItems.back();
+    LogItem LastItem() {
+        // Note: this is needed to allow the log internals to move things around - we could probably yield a few times as well
+        logItems.wait(50);
+
+        if (logItems.empty()) {
+            return lastItem;
+        }
+        lastItem = *logItems.pop();
+        return lastItem;
     }
 private:
-    std::vector<MockOutputSink::LogItem> logItems = {};
+    LogItem lastItem;
+    SafeQueue<MockOutputSink::LogItem> logItems = {};
+
 };
 
 // Logger don't allow 'static Sink mysink'
@@ -116,6 +127,7 @@ DLL_EXPORT int test_logger_enabledisable(ITesting *t) {
     TR_ASSERT(t, logA->IsEnabled() == false);
     // this should not show up..
     logA->Debug("from log a2");
+
     TR_ASSERT(t, mysink->LastItem().string != std::string("from log a2"));
     // but this should...
     logB->Debug("from log b2");
