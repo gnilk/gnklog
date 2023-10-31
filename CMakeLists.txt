@@ -57,6 +57,7 @@ list(APPEND src src/LogSink.cpp src/LogSink.h)
 list(APPEND src_utest src/utests/test_gnklog.cpp)
 list(APPEND src_utest src/utests/test_logcache.cpp)
 list(APPEND src_utest src/utests/test_logger.cpp)
+list(APPEND src_utest src/utests/test_logipc.cpp)
 list(APPEND src_utest src/utests/test_logmanager.cpp)
 
 # library/artifact declaration
