@@ -11,12 +11,14 @@
 #include <testinterface.h>
 
 #include "gnklog.h"
+#include "LogManager.h"
 
 using namespace gnilk;
 extern "C" {
 DLL_EXPORT int test_gnklog(ITesting *t);
 DLL_EXPORT int test_gnklog_exit(ITesting *t);
 DLL_EXPORT int test_gnklog_debug(ITesting *t);
+DLL_EXPORT int test_gnklog_readme(ITesting *t);
 }
 
 DLL_EXPORT int test_gnklog(ITesting *t) {
@@ -35,6 +37,8 @@ DLL_EXPORT int test_gnklog_exit(ITesting *t) {
     logger->Info("3 info message");
     logger->Warning("3 warn message");
 
+    Logger::Consume();
+
     return kTR_Pass;
 }
 
@@ -45,5 +49,17 @@ DLL_EXPORT int test_gnklog_debug(ITesting *t) {
     logger->Debug("mamma: %d, %s", 4, "world");
     logger->Debug("Some more fascinating strings");
     logger->Debug("Data is debug");
+
+    LogManager::Instance().Reset();
+
+    return kTR_Pass;
+}
+DLL_EXPORT int test_gnklog_readme(ITesting *t) {
+    Logger::Initialize();
+    auto logger = Logger::GetLogger("test");
+    logger->Debug("This is some debug output with printf syntax: %d, %s", 4, "world");
+    logger->Dbg("This is with fmt {}", 4);
+    LogManager::Instance().Consume();
+
     return kTR_Pass;
 }
