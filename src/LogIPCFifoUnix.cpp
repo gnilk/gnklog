@@ -67,6 +67,20 @@ void LogIPCFifoUnix::Close() {
     isOpen = false;
 }
 
+bool LogIPCFifoUnix::Available() {
+    struct pollfd pfd {
+            .fd = rwfd,
+            .events = POLLIN,
+            .revents = {},
+    };
+
+    if (poll(&pfd, 1, 0)==1) {
+        return true;
+    }
+    return false;
+}
+
+
 int32_t LogIPCFifoUnix::Write(const void *data, size_t szBytes) {
     if (!isOpen) {
         return -1;
@@ -83,18 +97,12 @@ int32_t LogIPCFifoUnix::Read(void *dstBuffer, size_t maxBytes) {
     if (!isOpen) {
         return -1;
     }
-    struct pollfd pfd {
-            .fd = rwfd,
-            .events = POLLIN,
-            .revents = {},
-    };
-
-    if (poll(&pfd, 1, 0)==1) {
-        auto res = read(rwfd, dstBuffer, maxBytes);
-        if (res < 0) {
-            perror("LogEventFifoUnix::Read");
-        }
-        return res;
+    if (!Available()) {
+        return 0;
     }
-    return 0;
+    auto res = read(rwfd, dstBuffer, maxBytes);
+    if (res < 0) {
+        perror("LogEventFifoUnix::Read");
+    }
+    return res;
 }

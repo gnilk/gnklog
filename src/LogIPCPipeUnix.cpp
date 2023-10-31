@@ -51,6 +51,19 @@ void LogIPCPipeUnix::Close() {
     isOpen = false;
 }
 
+bool LogIPCPipeUnix::Available() {
+    struct pollfd pfd {
+            .fd = readfd,
+            .events = POLLIN,
+            .revents = {},
+    };
+
+    if (poll(&pfd, 1, 0)==1) {
+        return true;
+    }
+    return false;
+}
+
 int32_t LogIPCPipeUnix::Write(const void *data, size_t szBytes) {
     if (!isOpen) {
         return -1;
@@ -67,20 +80,13 @@ int32_t LogIPCPipeUnix::Read(void *dstBuffer, size_t maxBytes) {
     if (!isOpen) {
         return -1;
     }
-
-    struct pollfd pfd {
-        .fd = readfd,
-        .events = POLLIN,
-        .revents = {},
-    };
-
-    if (poll(&pfd, 1, 0)==1) {
-        auto res = (int32_t)read(readfd, dstBuffer, maxBytes);
-        if (res < 0) {
-            perror("LogEventPipeUnix::Read");
-        }
-        return res;
+    if (!Available()) {
+        return 0;
     }
 
-    return 0;
+    auto res = (int32_t)read(readfd, dstBuffer, maxBytes);
+    if (res < 0) {
+        perror("LogEventPipeUnix::Read");
+    }
+    return res;
 }
