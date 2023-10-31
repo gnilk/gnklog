@@ -47,7 +47,10 @@ namespace gnilk {
     public:
         void Reset();
         void Initialize();
+        // FIXME: Consider splitting in multiple/separate functions
+        //        for instance we most likely want to keep the logInstances as the application will have references to Loggers still after close..
         void Close();
+
         __inline bool IsInitialized() const {
             return isInitialized;
         }
