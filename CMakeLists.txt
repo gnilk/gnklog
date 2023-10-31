@@ -59,6 +59,7 @@ list(APPEND src_utest src/utests/test_logcache.cpp)
 list(APPEND src_utest src/utests/test_logger.cpp)
 list(APPEND src_utest src/utests/test_logipc.cpp)
 list(APPEND src_utest src/utests/test_logmanager.cpp)
+list(APPEND src_utest src/utests/test_threading.cpp)
 
 # library/artifact declaration
 add_library(gnklog_utest SHARED ${src} ${src_utest})
