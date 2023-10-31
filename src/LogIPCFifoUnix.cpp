@@ -92,6 +92,7 @@ int32_t LogIPCFifoUnix::Write(const void *data, size_t szBytes) {
     if (res < 0) {
         perror("LogEventFifoUnix::Write");
     }
+    fsync(rwfd);
     return res;
 }
 

@@ -73,6 +73,7 @@ int32_t LogIPCPipeUnix::Write(const void *data, size_t szBytes) {
     if (res < 0) {
         perror("LogEventPipeUnix::Write");
     }
+    fsync(writefd);
     return res;
 
 }
@@ -88,5 +89,6 @@ int32_t LogIPCPipeUnix::Read(void *dstBuffer, size_t maxBytes) {
     if (res < 0) {
         perror("LogEventPipeUnix::Read");
     }
+
     return res;
 }
