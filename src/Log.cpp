@@ -17,7 +17,6 @@ void Log::Initialize() {
 }
 
 Log::~Log() {
-
 }
 
 Log::Ref Log::Create(const std::string &logName) {
@@ -29,17 +28,21 @@ Log::Ref Log::Create(const std::string &logName) {
 
 
 
-void Log::SendLogMessage(LogLevel level, const std::string &dbgMsg) const {
+int Log::SendLogMessage(LogLevel level, const std::string &dbgMsg) const {
     LogEvent logEvent(level);
     logEvent.timeStamp = LogClock::now();
     logEvent.idSenderThread = std::this_thread::get_id();
     logEvent.sender = name;
 
+    if (LogManager::Instance().IsClosed()) {
+        return -1;
+    }
+
     auto ipc = LogManager::Instance().GetIPC();
-    ipc->WriteEvent(logEvent, dbgMsg);
-
-
-    // FIXME: should be removed
-    //LogManager::Instance().SendToSinks();
+    // This will happen if the logmanager instance has been closed in between call's..
+    if (ipc == nullptr) {
+        return -1;
+    }
+    return ipc->WriteEvent(logEvent, dbgMsg);
 }
 

@@ -20,6 +20,11 @@ namespace gnilk {
     class Log {
     public:
         using Ref = std::shared_ptr<Log>;
+        enum class kStatus {
+            kOk = 0,
+            kFiltered = 1,
+            kSendError = 2,
+        };
     public:
         static Log::Ref Create(const std::string &logName);
         virtual ~Log();
@@ -76,42 +81,43 @@ namespace gnilk {
         // these all use printf formatting - old legacy
         //
         template <class...T>
-        inline void Debug(T... arguments) const {
-            if (!(isEnabled && WithinRange(kDebug))) return;
+        inline kStatus Debug(T... arguments) const {
+            if (!(isEnabled && WithinRange(kDebug))) return kStatus::kFiltered;
             auto str = fmt::sprintf(arguments...);
-            SendLogMessage(kDebug, str);
+            return (SendLogMessage(kDebug, str) > 0) ? kStatus::kOk : kStatus::kSendError;
+
         }
 
         template <class...T>
-        inline void Info(T... arguments) const {
-            if (!(isEnabled && WithinRange(kInfo))) return;
+        inline kStatus Info(T... arguments) const {
+            if (!(isEnabled && WithinRange(kInfo))) return kStatus::kFiltered;
             auto str = fmt::sprintf(arguments...);
-            SendLogMessage(kInfo, str);
+            return (SendLogMessage(kInfo, str) > 0) ? kStatus::kOk : kStatus::kSendError;
         }
 
         template <class...T>
-        inline void Warning(T... arguments) const {
-            if (!(isEnabled && WithinRange(kWarning))) return;
+        inline kStatus Warning(T... arguments) const {
+            if (!(isEnabled && WithinRange(kWarning))) return kStatus::kFiltered;
             auto str = fmt::sprintf(arguments...);
-            SendLogMessage(kWarning, str);
+            return (SendLogMessage(kWarning, str) > 0) ? kStatus::kOk : kStatus::kSendError;
         }
 
         template <class...T>
-        inline void Error(T... arguments) const {
-            if (!(isEnabled && WithinRange(kError))) return;
+        inline kStatus Error(T... arguments) const {
+            if (!(isEnabled && WithinRange(kError))) return kStatus::kFiltered;
             auto str = fmt::sprintf(arguments...);
-            SendLogMessage(kError, str);
+            return (SendLogMessage(kError, str) > 0) ? kStatus::kOk : kStatus::kSendError;
         }
 
         template <class...T>
-        inline void Critical(T... arguments) const {
-            if (!(isEnabled && WithinRange(kCritical))) return;
+        inline kStatus Critical(T... arguments) const {
+            if (!(isEnabled && WithinRange(kCritical))) return kStatus::kFiltered;
             auto str = fmt::sprintf(arguments...);
-            SendLogMessage(kCritical, str);
+            return (SendLogMessage(kCritical, str) > 0) ? kStatus::kOk : kStatus::kSendError;
         }
 
     protected:
-        void SendLogMessage(LogLevel level, const std::string &dbgMsg) const;
+        int SendLogMessage(LogLevel level, const std::string &dbgMsg) const;
 
     protected:
 
