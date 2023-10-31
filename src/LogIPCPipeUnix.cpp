@@ -27,8 +27,7 @@ bool LogIPCPipeUnix::Open() {
         return true;
     }
 
-    // Create a regular non-blocking pipe
-    //int res = pipe2(pipefd, O_NONBLOCK);
+    // Create a regular pipe - we use 'poll' to check if it has data
     int res = pipe(pipefd);
 
     if (res < 0) {
@@ -58,6 +57,7 @@ bool LogIPCPipeUnix::Available() {
             .revents = {},
     };
 
+    // Non-blocking poll
     if (poll(&pfd, 1, 0)==1) {
         return true;
     }
@@ -66,6 +66,7 @@ bool LogIPCPipeUnix::Available() {
 
 int32_t LogIPCPipeUnix::Write(const void *data, size_t szBytes) {
     if (!isOpen) {
+        // Open here???
         return -1;
     }
     auto res =  (int32_t)write(writefd, data, szBytes);
@@ -83,7 +84,6 @@ int32_t LogIPCPipeUnix::Read(void *dstBuffer, size_t maxBytes) {
     if (!Available()) {
         return 0;
     }
-
     auto res = (int32_t)read(readfd, dstBuffer, maxBytes);
     if (res < 0) {
         perror("LogEventPipeUnix::Read");

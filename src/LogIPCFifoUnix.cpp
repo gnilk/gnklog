@@ -74,6 +74,7 @@ bool LogIPCFifoUnix::Available() {
             .revents = {},
     };
 
+    // Non-blocking poll...
     if (poll(&pfd, 1, 0)==1) {
         return true;
     }
@@ -83,6 +84,7 @@ bool LogIPCFifoUnix::Available() {
 
 int32_t LogIPCFifoUnix::Write(const void *data, size_t szBytes) {
     if (!isOpen) {
+        // Auto open here???
         return -1;
     }
 
