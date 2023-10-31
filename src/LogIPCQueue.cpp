@@ -12,6 +12,7 @@ void LogIPCQueue::Close() {
 }
 
 bool LogIPCQueue::Available() {
+    queue.wait(10);
     return !queue.empty();
 }
 
