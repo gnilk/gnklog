@@ -79,12 +79,14 @@ void LogEvent::ComposeReportString() {
              gmt->tm_hour, gmt->tm_min, gmt->tm_sec, msec);
 
 
-    static std::hash<std::thread::id> idHasher;
+    static std::hash<std::thread::id> tidHasher;
 
-    uint32_t hashSenderThread = (idHasher(idSenderThread)) & (UINT32_MAX - 1);
+    uint32_t hashSenderThread = (tidHasher(idSenderThread)) & (UINT32_MAX - 1);
+    uint32_t hashSenderProc = idSenderProc & (UINT32_MAX -1);
 
-    snprintf(header, LOG_MAX_NAME_LEN + 64, "%s [%.8x] %8s %32s - ",
+    snprintf(header, LOG_MAX_NAME_LEN + 64, "%s [%.8x:%.8x] %8s %32s - ",
              sTime,
+             hashSenderProc,
              hashSenderThread,
              MessageClassNameFromInt(level).c_str(),
              sender.c_str());
@@ -100,22 +102,3 @@ void LogEvent::ComposeReportString() {
 }
 
 
-
-////
-//// Write
-////
-//size_t LogEvent::Write(const std::string &dbgMessage) const {
-//
-//    auto &ipcHandler = LogManager::Instance().GetIPC();
-//    return ipcHandler.WriteEvent(*this, dbgMessage);
-//}
-//
-////
-//// Reads a log event from the underlying IPC mechanism
-////
-//size_t LogEvent::Read() {
-//
-//    auto &ipcHandler = LogManager::Instance().GetIPC();
-//    return ipcHandler.ReadEvent(*this);
-//
-//}
