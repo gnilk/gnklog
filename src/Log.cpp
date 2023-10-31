@@ -9,7 +9,7 @@
 using namespace gnilk;
 
 Log::Log(const std::string &logName) : name(logName) {
-
+    pid = getpid();
 }
 
 void Log::Initialize() {
@@ -31,7 +31,8 @@ Log::Ref Log::Create(const std::string &logName) {
 int Log::SendLogMessage(LogLevel level, const std::string &dbgMsg) const {
     LogEvent logEvent(level);
     logEvent.timeStamp = LogClock::now();
-    logEvent.idSenderThread = std::this_thread::get_id();
+    logEvent.idSenderThread = std::this_thread::get_id();   // this could change per instance
+    logEvent.idSenderProc = pid;                            // This won't change per instance
     logEvent.sender = name;
 
     if (LogManager::Instance().IsClosed()) {

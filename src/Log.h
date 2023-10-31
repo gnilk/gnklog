@@ -144,6 +144,7 @@ namespace gnilk {
 
     private:
         std::string name = {};
+        pid_t pid;
         bool isEnabled = true;
         LogLevel logLevelThreshold = LogLevel::kNone;   // Everything, no threshold
     };
