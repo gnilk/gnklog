@@ -27,6 +27,7 @@ LogManager &LogManager::Instance() {
 
 LogManager::~LogManager() {
     Close();
+    logInstances.clear();   // Now we can clear it..
 }
 
 void LogManager::Close() {
@@ -49,7 +50,7 @@ void LogManager::Close() {
 
     cache->Clear();
     sinks.clear();
-    logInstances.clear();
+    // logInstances.clear();    - DO NOT CLEAR THIS!!!!
     isInitialized = false;
 }
 
