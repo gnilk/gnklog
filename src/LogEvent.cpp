@@ -8,6 +8,7 @@
 
 #include <string.h>
 
+#include "fmt/format.h"
 #include "LogEvent.h"
 #include "LogManager.h"
 
@@ -63,7 +64,6 @@ static const std::string &MessageClassNameFromInt(LogLevel level) {
 // Consider removing the composer out of here...
 //
 void LogEvent::ComposeReportString() {
-    char header[LOG_MAX_NAME_LEN + 64];
     char sTime[32];
 
     // a bit more fiddly
@@ -74,6 +74,8 @@ void LogEvent::ComposeReportString() {
 
     struct tm *gmt = std::gmtime(&tstamp);
 
+    // sTime = 22 chars
+    // FIXME: redo this with fmt
     snprintf(sTime, 32, "%.4u-%.2u-%.2u %.2d:%.2d:%.2d.%.3d",
              gmt->tm_year + 1900, gmt->tm_mon + 1, gmt->tm_mday,
              gmt->tm_hour, gmt->tm_min, gmt->tm_sec, msec);
@@ -84,15 +86,13 @@ void LogEvent::ComposeReportString() {
     uint32_t hashSenderThread = (tidHasher(idSenderThread)) & (UINT32_MAX - 1);
     uint32_t hashSenderProc = idSenderProc & (UINT32_MAX -1);
 
-    snprintf(header, LOG_MAX_NAME_LEN + 64, "%s [%.8x:%.8x] %8s %32s - ",
-             sTime,
-             hashSenderProc,
-             hashSenderThread,
-             MessageClassNameFromInt(level).c_str(),
-             sender.c_str());
-
-    headerString = header;
-
+    // Allow some kind of config around this...
+    headerString = fmt::format("{} [{:#010x}:{:#010x}] {:8} {:32}",
+                sTime,
+                hashSenderProc,
+                hashSenderThread,
+                MessageClassNameFromInt(level),
+                sender);
 
     reportString = headerString + msgString;
 
