@@ -13,6 +13,7 @@
 #include "LogCore.h"
 #include "LogManager.h"
 #include "LogConsoleSink.h"
+#include <iostream>
 
 using namespace gnilk;
 
@@ -80,6 +81,7 @@ void LogManager::Initialize() {
 
     // This should NOT happen - but let's check anyway...
     if (ipcHandler == nullptr) {
+        //ipcHandler = std::make_shared<LogIPCPipeUnix>();
         ipcHandler = std::make_shared<LogIPCQueue>();
         if (!ipcHandler->Open()) {
             exit(1);
@@ -88,8 +90,8 @@ void LogManager::Initialize() {
 
     isInitialized = true;
 
-
     sinkThread = std::thread([this]() {
+        bQuitSinkThread = false;
         SinkThread();
     });
 
@@ -194,10 +196,22 @@ void LogManager::IterateCache(const LogCache::CachedEventDelgate &delegate) {
 }
 
 
+void LogManager::Consume() {
+
+    // If we have data available but not yet written - spin a bit until the queue is empty
+    // TO-DO: This is not the way - since we can't flush on the 'reader' side (which is what this tries to do)
+    //        Bascially this operation is not possible...  However, I want to this in order to synchronize basic
+    //        single in-process logging (console, files, etc..)
+    while(ipcHandler->Available()) {
+        std::this_thread::yield();
+    }
+}
+
 
 void LogManager::SinkThread() {
     while(!bQuitSinkThread) {
         SendToSinks();
+        std::this_thread::yield();
     }
 }
 
@@ -212,16 +226,17 @@ void LogManager::SendToSinks() {
 
     std::lock_guard<std::mutex> lock(sinkLock);
 
-    // Fetch next event from the cache
-    while(ipcHandler->Available()) {
+    // Fetch all events from the ipc handler
+    while (ipcHandler->Available()) {
         auto logEvent = cache->Next();
 
         if (ipc->ReadEvent(*logEvent) < 0) {
             // failed
+            perror("SendToSinks, ipc->ReadEvent failed!");
             return;
         }
-        logEvent->ComposeReportString();    // pre-compose the report string...
 
+        logEvent->ComposeReportString();    // pre-compose the report string...
         std::deque<std::future<int>> sinkReadyList;
 
         for (auto &sinkInstance: sinks) {
@@ -247,5 +262,5 @@ void LogManager::SendToSinks() {
             sinkReadyList.pop_front();
         }
     }
-
 }
+

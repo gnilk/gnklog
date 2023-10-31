@@ -75,6 +75,7 @@ namespace gnilk {
         }
 
         void SendToSinks();
+        void Consume();
     protected:
         void IterateCache(const LogCache::CachedEventDelgate &);
         void SinkThread();
@@ -87,7 +88,6 @@ namespace gnilk {
         bool isInitialized = false;
         size_t cacheCapacity = GNILK_LOG_CACHE_CAPACITY;
 
-//        LogEventPipeUnix eventPipe;
 //        LogIPCFifoUnix ipcHandler;
         LogIPCQueue::Ref ipcHandler = nullptr;
 
