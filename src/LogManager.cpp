@@ -58,22 +58,8 @@ void LogManager::Close() {
 // NOTE: Any sink registered as unmanaged will be left untouched - i.e. the instance will be dangling unless
 // the caller delete it!
 void LogManager::Reset() {
-
-    // Note: This should just be Close/Initialize from now on...
-
-    if (!isInitialized) {
-        Initialize();
-        return;
-    }
-    std::lock_guard<std::mutex> lock(instLock);
-    cache->Clear();
-    sinks.clear();
-    logInstances.clear();
-
-    // FIXME: this is not nice nor good...
-    isInitialized = false;
-    RegisterDefaultSinks();
-    isInitialized = true;
+    Close();
+    Initialize();
 }
 
 //
