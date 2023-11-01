@@ -2,6 +2,7 @@
 // Created by gnilk on 20.10.23.
 //
 #include <stdarg.h>
+#include <unistd.h>
 
 #include "Log.h"
 #include "LogManager.h"
