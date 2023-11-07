@@ -51,6 +51,7 @@ void Logger::EnableAllLoggers() {
        log->SetEnabled(true);
        return true;
     });
+    LogManager::Instance().SetEnableLogOnCreate(true);
 }
 
 void Logger::DisableAllLoggers() {
@@ -58,6 +59,7 @@ void Logger::DisableAllLoggers() {
         log->SetEnabled(false);
         return true;
     });
+    LogManager::Instance().SetEnableLogOnCreate(false);
 }
 
 

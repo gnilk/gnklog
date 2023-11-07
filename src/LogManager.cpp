@@ -119,6 +119,8 @@ Log::Ref LogManager::GetOrAddLog(const std::string &name) {
     auto writer = Log::Create(name);
     auto instance = LogInstance::Create(name, writer);
 
+    instance->GetLog()->SetEnabled(enableLogOnCreate);
+
     logInstances[name] = instance;
     return instance->GetLog();
 }

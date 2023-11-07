@@ -67,6 +67,10 @@ namespace gnilk {
         bool RemoveSink(const std::string &name);
         void IterateSinks(const SinkDelegate &);
 
+        void SetEnableLogOnCreate(bool isEnabled) {
+            enableLogOnCreate = isEnabled;
+        }
+
         LogIPCBase::Ref GetIPC() {
             return ipcHandler;
         }
@@ -86,6 +90,7 @@ namespace gnilk {
 
     protected:
         bool isInitialized = false;
+        bool enableLogOnCreate = true;
         size_t cacheCapacity = GNILK_LOG_CACHE_CAPACITY;
 
 //        LogIPCFifoUnix ipcHandler;
