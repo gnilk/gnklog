@@ -31,6 +31,21 @@ LogManager::~LogManager() {
     logInstances.clear();   // Now we can clear it..
 }
 
+bool LogManager::UseIPCMechanism(IPCMechanism newIPCMechanism) {
+    if (ipcHandler != nullptr) {
+        // test this:
+        // 1) Close();
+        // 2) Assign..
+        // 3) Initialize();
+
+        fmt::println(stderr, "IPC Mechanism can not be changed when Logger has been initialized!");
+        return false;
+    }
+    ipcMechanism = newIPCMechanism;
+    return true;
+}
+
+
 void LogManager::Close() {
     // This can happen if someone calls close explicitly
     if (!isInitialized) {
@@ -81,8 +96,18 @@ void LogManager::Initialize() {
 
     // This should NOT happen - but let's check anyway...
     if (ipcHandler == nullptr) {
-        //ipcHandler = std::make_shared<LogIPCPipeUnix>();
-        ipcHandler = std::make_shared<LogIPCQueue>();
+        switch(ipcMechanism) {
+            case IPCMechanism::kFifo :
+                ipcHandler = std::make_shared<LogIPCFifoUnix>();
+                break;
+            case IPCMechanism::kPipe :
+                ipcHandler = std::make_shared<LogIPCPipeUnix>();
+                break;
+            case IPCMechanism::kQueue :
+            default:
+                ipcHandler = std::make_shared<LogIPCQueue>();
+                break;
+        }
         if (!ipcHandler->Open()) {
             exit(1);
         }

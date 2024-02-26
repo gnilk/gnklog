@@ -12,6 +12,10 @@ void Logger::Initialize() {
     LogManager::Instance().Initialize();
 }
 
+bool Logger::UseIPCMechanism(IPCMechanism ipcMechanism) {
+    LogManager::Instance().UseIPCMechanism(ipcMechanism);
+}
+
 // New interface - returns shared ptr...
 Log::Ref Logger::GetLogRef(const std::string &name) {
     // auto-initialize here...

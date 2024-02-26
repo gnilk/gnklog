@@ -27,6 +27,13 @@ namespace gnilk {
         kCustom   = 600,
     };
 
+    enum class IPCMechanism {
+        kQueue,     // in-process queue, this is ok if you are not calling fork and so forth (default)
+        kFifo,      // in case you have out-of-process stuff sharing logger (fork), you can use this or 'pipe'
+        kPipe,      // in case you have out-of-process stuff sharing logger (fork), you can use this or 'fifo'
+    };
+
+
 }
 
 #endif //GNKLOG_LOGCORE_H
