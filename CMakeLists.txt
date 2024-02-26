@@ -12,6 +12,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 option(LOG_HAVE_NEWLINE "Append newline to strings" ON)
+option(LOG_HAVE_FMT "Set to true to use your version of fmt" ON)
 
 
 # dummy library to hold baseline compile options for multiple targets..
@@ -24,12 +25,25 @@ endif()
 #
 # Compile the bundled version of fmt
 #
-list(APPEND fmt_src src/ext/fmt/format.cc)
+if (NOT LOG_HAVE_FMT)
+    message(STATUS "gnklog using bundled fmt")
+    list(APPEND fmt_src src/ext/fmt/format.cc)
+    # note: name is not fmt because it will clash with other projects importing this library
+    add_library(gnk_log_fmt STATIC ${fmt_src})
+    target_compile_options(gnk_log_fmt PUBLIC -fPIC)
+    target_include_directories(gnk_log_fmt PUBLIC src/ext)
+    list(APPEND libdeps gnk_log_fmt)
+else()
+    #set(LOG_FMT_INCLUDE ${LOG_FMT_DIR}/include)
+    message(STATUS "gnklog using external fmt from ${LOG_FMT_DIR}")
+    if (NOT LOG_FMT_DIR)
+        message("You need to specify your FMT directory with 'LOG_FMT_DIR'")
+    endif()
 
-# note: name is not fmt because it will clash with other projects importing this library
-add_library(gnk_log_fmt STATIC ${fmt_src})
-target_compile_options(gnk_log_fmt PUBLIC -fPIC)
-target_include_directories(gnk_log_fmt PUBLIC src/ext)
+    list(APPEND include_dirs ${LOG_FMT_DIR}/include)
+    #target_include_directories(options INTERFACE )
+
+endif()
 
 
 
@@ -74,9 +88,11 @@ endif()
 
 target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow -Wpedantic)
 target_include_directories(gnklog PUBLIC ${include_dirs})
-target_link_libraries(gnklog options gnk_log_fmt)
+#target_link_libraries(gnklog options gnk_log_fmt)
+target_link_libraries(gnklog options ${libdeps})
 
 # unit test
 target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter)
 target_include_directories(gnklog_utest PUBLIC ${include_dirs})
-target_link_libraries(gnklog_utest options gnk_log_fmt)
+#target_link_libraries(gnklog_utest options gnk_log_fmt)
+target_link_libraries(gnklog_utest options ${libdeps})
