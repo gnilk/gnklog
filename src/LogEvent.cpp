@@ -87,12 +87,20 @@ void LogEvent::ComposeReportString() {
     uint32_t hashSenderProc = idSenderProc & (UINT32_MAX -1);
 
     // Allow some kind of config around this...
-    headerString = fmt::format("{} [{:#010x}:{:#010x}] {:8} {:32}",
-                sTime,
-                hashSenderProc,
-                hashSenderThread,
-                MessageClassNameFromInt(level),
-                sender);
+    // FIXME: we should check 'FMT_EXCEPTIONS' here
+    //        if enabled, libfmt can throw exceptions and we don't want that...
+    try {
+        headerString = fmt::format("{} [{:#010x}:{:#010x}] {:8} {:32}",
+                                   sTime,
+                                   hashSenderProc,
+                                   hashSenderThread,
+                                   MessageClassNameFromInt(level),
+                                   sender);
+    } catch(fmt::format_error &e) {
+        fprintf(stderr, "fmt exception; ", e.what());
+        reportString = e.what();
+        return;
+    }
 
     reportString = headerString + msgString;
 
