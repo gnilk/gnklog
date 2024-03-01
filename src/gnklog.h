@@ -45,6 +45,7 @@ namespace gnilk {
         static void DisableAllLoggers();
         static void EnableAllLoggers();
 
+        static bool UseIPCMechanism(IPCMechanism ipcMechanism);
 
         // Sink functionality
         static void AddSink(LogSink::Ref sink, const std::string &name);

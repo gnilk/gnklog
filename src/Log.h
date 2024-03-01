@@ -12,6 +12,15 @@
 #include "fmt/printf.h"
 #include "fmt/format.h"
 
+#if (FMT_VERSION > 100101)
+    #ifdef __GNUC__
+        #pragma GCC error "FMT Version must be 10.1.x"
+    #else
+        #pragma error "FMT Version must be 10.1.x"
+    #endif
+#endif
+
+
 #include "LogCore.h"
 #include "LogEvent.h"
 

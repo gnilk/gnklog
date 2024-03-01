@@ -45,6 +45,8 @@ namespace gnilk {
         static LogManager &Instance();
 
     public:
+        bool UseIPCMechanism(IPCMechanism newIPCMechanism);
+
         void Reset();
         void Initialize();
         void Close();
@@ -93,8 +95,8 @@ namespace gnilk {
         bool enableLogOnCreate = true;
         size_t cacheCapacity = GNILK_LOG_CACHE_CAPACITY;
 
-//        LogIPCFifoUnix ipcHandler;
-        LogIPCQueue::Ref ipcHandler = nullptr;
+        IPCMechanism ipcMechanism = IPCMechanism::kQueue;
+        LogIPCBase::Ref ipcHandler = nullptr;
 
         LogCache::Ref cache = {};
         std::mutex instLock;
