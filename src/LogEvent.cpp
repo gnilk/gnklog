@@ -97,7 +97,7 @@ void LogEvent::ComposeReportString() {
                                    MessageClassNameFromInt(level),
                                    sender);
     } catch(fmt::format_error &e) {
-        fprintf(stderr, "fmt exception; ", e.what());
+        fprintf(stderr, "fmt exception, e=%s", e.what());
         reportString = e.what();
         return;
     }
