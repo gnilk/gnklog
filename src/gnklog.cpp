@@ -13,7 +13,7 @@ void Logger::Initialize() {
 }
 
 bool Logger::UseIPCMechanism(IPCMechanism ipcMechanism) {
-    LogManager::Instance().UseIPCMechanism(ipcMechanism);
+    return LogManager::Instance().UseIPCMechanism(ipcMechanism);
 }
 
 // New interface - returns shared ptr...
