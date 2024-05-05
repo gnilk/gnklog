@@ -12,7 +12,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 option(LOG_HAVE_NEWLINE "Append newline to strings" ON)
-option(LOG_HAVE_FMT "Set to true to use your version of fmt" ON)
+option(LOG_HAVE_FMT "Set to true to use your version of fmt" OFF)
 
 
 # dummy library to hold baseline compile options for multiple targets..
@@ -92,7 +92,7 @@ target_include_directories(gnklog PUBLIC ${include_dirs})
 target_link_libraries(gnklog options ${libdeps})
 
 # unit test
-target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter)
+target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter -DTRUN_USE_V1)
 target_include_directories(gnklog_utest PUBLIC ${include_dirs})
 #target_link_libraries(gnklog_utest options gnk_log_fmt)
 target_link_libraries(gnklog_utest options ${libdeps})
