@@ -18,6 +18,12 @@ using namespace gnilk;
 
 static std::string fifoBaseName= "/tmp/myfifo";
 
+//
+// FIXME: bugs found while incorporating in testrunner
+//  - Separate open and 'connectto'
+//  - Close should close rwfd and ONLY remove/close the fifofd when the 'server' side is closed
+//
+
 bool LogIPCFifoUnix::Open() {
     if (isOpen) {
         return true;
