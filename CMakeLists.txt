@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.16)
 project(gnklog)
 
 
@@ -90,14 +90,18 @@ if (APPLE)
 endif()
 
 
-
-target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow -Wpedantic)
+if(UNIX)
+    target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow -Wpedantic)
+    target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter)
+elseif(WIN32)
+    # win32 stuff here...
+endif()
 target_include_directories(gnklog PUBLIC ${include_dirs})
 #target_link_libraries(gnklog options gnk_log_fmt)
 target_link_libraries(gnklog options ${libdeps})
 
 # unit test
-target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter -DTRUN_USE_V1)
 target_include_directories(gnklog_utest PUBLIC ${include_dirs})
+target_compile_definitions(gnklog_utest PUBLIC -DTRUN_USE_V1)
 #target_link_libraries(gnklog_utest options gnk_log_fmt)
 target_link_libraries(gnklog_utest options ${libdeps})
