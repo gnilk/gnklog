@@ -24,6 +24,7 @@
 #include "LogCore.h"
 #include "LogEvent.h"
 
+
 namespace gnilk {
     // This a Log
     class Log {

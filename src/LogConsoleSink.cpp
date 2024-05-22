@@ -6,7 +6,10 @@
 // simple stdout printf console sink...
 //
 
+#ifndef WIN32
 #include <unistd.h>
+#endif
+
 #include <stdio.h>
 #include "LogConsoleSink.h"
 

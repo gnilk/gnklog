@@ -2,7 +2,9 @@
 // Created by gnilk on 20.10.23.
 //
 #include <stdarg.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 
 #include "Log.h"
 #include "LogManager.h"

@@ -14,6 +14,17 @@ namespace gnilk {
     #define LOG_MAX_NAME_LEN 64
 #endif
 
+#ifdef WIN32
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+    #include <Windows.h>
+    // Will this pick up mine instead???
+    #include <process.h>
+    #ifdef _MSC_VER
+        typedef DWORD pid_t;
+    #endif
+#endif
     using LogClock = std::chrono::system_clock;
     using LogTimeStamp = std::chrono::time_point<LogClock>;
 
