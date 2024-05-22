@@ -97,12 +97,14 @@ void LogManager::Initialize() {
     // This should NOT happen - but let's check anyway...
     if (ipcHandler == nullptr) {
         switch(ipcMechanism) {
+#ifndef WIN32
             case IPCMechanism::kFifo :
                 ipcHandler = std::make_shared<LogIPCFifoUnix>();
                 break;
             case IPCMechanism::kPipe :
                 ipcHandler = std::make_shared<LogIPCPipeUnix>();
                 break;
+#endif
             case IPCMechanism::kQueue :
             default:
                 ipcHandler = std::make_shared<LogIPCQueue>();

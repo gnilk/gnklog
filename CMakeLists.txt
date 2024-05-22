@@ -59,13 +59,18 @@ list(APPEND src src/LogEvent.cpp src/LogEvent.h)
 list(APPEND src src/LogFileSink.cpp src/LogFileSink.h)
 list(APPEND src src/LogInstance.h)
 list(APPEND src src/LogInternal.h)
-list(APPEND src src/LogIPCFifoUnix.cpp src/LogIPCFifoUnix.h)
-list(APPEND src src/LogIPCPipeUnix.cpp src/LogIPCPipeUnix.h)
 list(APPEND src src/LogIPCStreamBase.cpp src/LogIPCStreamBase.h)
 list(APPEND src src/LogIPCQueue.cpp src/LogIPCQueue.h)
 list(APPEND src src/LogManager.cpp src/LogManager.h)
 list(APPEND src src/LogSafeQueue.h)
 list(APPEND src src/LogSink.cpp src/LogSink.h)
+
+if (UNIX)
+    list(APPEND src src/LogIPCFifoUnix.cpp src/LogIPCFifoUnix.h)
+    list(APPEND src src/LogIPCPipeUnix.cpp src/LogIPCPipeUnix.h)
+elseif (WIN32)
+
+endif()
 
 # unit test source code
 list(APPEND src_utest src/utests/test_gnklog.cpp)

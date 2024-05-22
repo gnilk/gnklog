@@ -10,6 +10,10 @@
 #include <string>
 #include <chrono>
 
+#ifdef WIN32
+#include <process.h>    // pid_t
+#endif
+
 #include "LogCore.h"
 
 namespace gnilk {
