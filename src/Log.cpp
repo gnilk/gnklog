@@ -12,7 +12,11 @@
 using namespace gnilk;
 
 Log::Log(const std::string &logName) : name(logName) {
+#ifdef WIN32
+    pid = _getpid();
+#else
     pid = getpid();
+#endif
 }
 
 void Log::Initialize() {
