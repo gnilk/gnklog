@@ -16,7 +16,7 @@
 
 using namespace gnilk;
 
-static std::string fifoBaseName= "/tmp/myfifo";
+static std::string fifoBaseName= "/tmp/gnklog";
 
 //
 // FIXME: bugs found while incorporating in testrunner
