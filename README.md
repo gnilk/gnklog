@@ -49,6 +49,7 @@ What you really ought to be doing, in order to be nice is:
 
 ## TODO List
 ```text
+- Revisit the thread synch - condition_var.notify is not perhaps as 'safe' as I thought it might be
 ! Split the logmanager in a 'client' / 'server' part
 ! Serialization of event's should not be in the Event class but rather in the IPC handling
 ! Add an in-proc Queue for handing of things to the new LogServer (i.e. replace SendToSinks with a thread)
