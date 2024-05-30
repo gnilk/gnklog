@@ -11,7 +11,14 @@
 
 #include "fmt/printf.h"
 #include "fmt/format.h"
+/*
+ * Tested with FMT version 10.1.1 and 10.2.1
+ * Note: 10.1.1 can't compile on GCC 14.1 for some reason (internal compiler error)
+ *
+ * I'll keep this check commented out for now...
+ */
 
+/*
 #if (FMT_VERSION > 100101)
     #ifdef __GNUC__
         #pragma GCC error "FMT Version must be 10.1.x"
@@ -19,7 +26,7 @@
         #pragma error "FMT Version must be 10.1.x"
     #endif
 #endif
-
+*/
 
 #include "LogCore.h"
 #include "LogEvent.h"
