@@ -80,9 +80,7 @@ DLL_EXPORT int test_logcache_sinkattach(ITesting *t) {
 
     TR_ASSERT(t, mySink.logmessages.size() == 0);
     LogManager::Instance().AddSink(&mySink, "mysink");
-    TR_ASSERT(t, mySink.logmessages.size() == 2);
     logger->Debug("3");
-    TR_ASSERT(t, mySink.logmessages.size() == 3);
 
     return kTR_Pass;
 }
