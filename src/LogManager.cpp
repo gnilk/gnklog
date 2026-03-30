@@ -51,11 +51,15 @@ void LogManager::Close() {
     if (!isInitialized) {
         return;
     }
-    // event pipe will close through DTOR
-    std::lock_guard<std::mutex> lock(instLock);
     // Quit the sink-thread
-    bQuitSinkThread = true;
+    {
+        std::lock_guard<std::mutex> lock(instLock);
+        bQuitSinkThread.store(true, std::memory_order_relaxed);
+    }
     sinkThread.join();
+
+    //
+    std::lock_guard<std::mutex> lock(instLock);
 
     // Send any left-overs from the queue
     SendToSinks();
@@ -117,12 +121,10 @@ void LogManager::Initialize() {
 
     isInitialized = true;
 
+    bQuitSinkThread.store(false, std::memory_order_relaxed);
     sinkThread = std::thread([this]() {
-        bQuitSinkThread = false;
         SinkThread();
     });
-
-
 }
 
 //
@@ -238,7 +240,7 @@ void LogManager::Consume() {
 
 
 void LogManager::SinkThread() {
-    while(!bQuitSinkThread) {
+    while(!bQuitSinkThread.load()) {
         SendToSinks();
         std::this_thread::yield();
     }
@@ -248,7 +250,7 @@ void LogManager::SinkThread() {
 // This will forward all data to the log sinks
 //
 void LogManager::SendToSinks() {
-    auto ipc = LogManager::Instance().GetIPC();
+    auto ipc = GetIPC();
     if (!ipcHandler->Available()) {
         return;
     }
