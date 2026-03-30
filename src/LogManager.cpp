@@ -53,8 +53,9 @@ void LogManager::Close() {
     }
     // Quit the sink-thread
     {
-        std::lock_guard<std::mutex> lock(instLock);
-        bQuitSinkThread.store(true, std::memory_order_relaxed);
+        std::lock_guard<std::mutex> lock(*cvMutex);
+        bQuitSinkThread.store(true, std::memory_order_release);
+        cv->notify_all();
     }
     sinkThread.join();
 
@@ -70,6 +71,7 @@ void LogManager::Close() {
 
     cache->Clear();
     sinks.clear();
+
     // logInstances.clear();    - DO NOT CLEAR THIS!!!!
     isInitialized = false;
 }
@@ -121,10 +123,11 @@ void LogManager::Initialize() {
 
     isInitialized = true;
 
-    bQuitSinkThread.store(false, std::memory_order_relaxed);
-    sinkThread = std::thread([this]() {
-        SinkThread();
-    });
+    cvMutex = std::make_unique<std::mutex>();
+    cv = std::make_unique<std::condition_variable>();
+
+    bQuitSinkThread.store(false, std::memory_order_release);
+    sinkThread = std::thread(&LogManager::SinkThread, this);
 }
 
 //
@@ -191,6 +194,7 @@ void LogManager::AddSink(LogSink *sink, const std::string &name) {
     std::lock_guard<std::mutex> lock(sinkLock);
     auto sinkInstance = LogSinkInstanceUnmanaged::Create(sink, name);
     sinks.push_back(std::move(sinkInstance));
+
     // FIXME: This is not good - we can't do this during initialization
     if (isInitialized) {
         sink->OnAttached();
@@ -239,10 +243,28 @@ void LogManager::Consume() {
 }
 
 
+// void LogManager::SinkThread() {
+//     while(!bQuitSinkThread.load()) {
+//         SendToSinks();
+//         std::this_thread::yield();
+//     }
+// }
 void LogManager::SinkThread() {
-    while(!bQuitSinkThread.load()) {
+    std::unique_lock<std::mutex> lock(*cvMutex);
+
+    while (true) {
+        cv->wait(lock, [&] {
+            return (bQuitSinkThread.load(std::memory_order_acquire) || ipcHandler->Available());
+        });
+
+        if (bQuitSinkThread.load(std::memory_order_acquire)) {
+            break;
+        }
+
+        // IMPORTANT: unlock while doing work
+        lock.unlock();
         SendToSinks();
-        std::this_thread::yield();
+        lock.lock();
     }
 }
 

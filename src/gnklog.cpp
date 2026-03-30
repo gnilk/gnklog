@@ -47,7 +47,7 @@ void Logger::EnableLogger(const std::string &name) {
         return;
     }
 
-    log->SetEnabled(false);
+    log->SetEnabled(true);
 }
 
 void Logger::EnableAllLoggers() {
