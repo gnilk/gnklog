@@ -125,6 +125,10 @@ void LogManager::Initialize() {
 
     cvMutex = std::make_unique<std::mutex>();
     cv = std::make_unique<std::condition_variable>();
+    ipcHandler->onEventWritten = [this]() {
+        this->cv->notify_one();
+    };
+
 
     bQuitSinkThread.store(false, std::memory_order_release);
     sinkThread = std::thread(&LogManager::SinkThread, this);

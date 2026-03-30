@@ -25,6 +25,11 @@ int32_t LogIPCQueue::WriteEvent(const LogEvent &event, const std::string &dbgMes
     msg.event = event;
     msg.dbgMessage = dbgMessage;
     queue.push(msg);
+
+    if (onEventWritten != nullptr) {
+        onEventWritten();
+    }
+
     return 1;
 }
 

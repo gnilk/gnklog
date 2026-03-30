@@ -39,6 +39,11 @@ int32_t LogIPCStreamBase::WriteEvent(const LogEvent &event, const std::string &d
         perror("LogIPCStremBase::WriteEvent");
         return res;
     }
+    if (onEventWritten != nullptr) {
+        onEventWritten();
+    }
+
+
     return res;
 
 }
