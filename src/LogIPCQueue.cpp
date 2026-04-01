@@ -12,7 +12,9 @@ void LogIPCQueue::Close() {
 }
 
 bool LogIPCQueue::Available() {
-    queue.wait(10);
+    // This wait should not be needed - or it is needed but the empty check is not
+    // WIP: Verifying this..
+    //queue.wait(10);
     return !queue.empty();
 }
 
