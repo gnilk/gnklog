@@ -12,13 +12,13 @@
 #include "fmt/printf.h"
 #include "fmt/format.h"
 
-#if (FMT_VERSION > 100101)
-    #ifdef __GNUC__
-        #pragma GCC error "FMT Version must be 10.1.x"
-    #else
-        #pragma error "FMT Version must be 10.1.x"
-    #endif
-#endif
+// #if (FMT_VERSION > 100101)
+//     #ifdef __GNUC__
+//         #pragma GCC error "FMT Version must be 10.1.x"
+//     #else
+//         #pragma error "FMT Version must be 10.1.x"
+//     #endif
+// #endif
 
 
 #include "LogCore.h"
@@ -59,8 +59,11 @@ namespace gnilk {
         template <class...T>
         inline kStatus Dbg(const std::string& format, T&&... args) {
             if (!(isEnabled && WithinRange(kDebug))) return kStatus::kFiltered;
-
-            fmt::format_arg_store<fmt::format_context, T...> as{args...};
+            #if FMT_VERSION >= 110000
+                auto as = fmt::make_format_args(args...);
+            #else
+                fmt::format_arg_store<fmt::format_context, T...> as{args...};
+            #endif
             auto str = fmt::vformat(format, as);
 
             return (SendLogMessage(kDebug, str) > 0) ? kStatus::kOk : kStatus::kSendError;
@@ -69,7 +72,11 @@ namespace gnilk {
         inline kStatus Inf(const std::string& format, T&&... args) {
             if (!(isEnabled && WithinRange(kInfo))) return kStatus::kFiltered;
 
+#if FMT_VERSION >= 110000
+            auto as = fmt::make_format_args(args...);
+#else
             fmt::format_arg_store<fmt::format_context, T...> as{args...};
+#endif
             auto str = fmt::vformat(format, as);
 
             return (SendLogMessage(kInfo, str) > 0) ? kStatus::kOk : kStatus::kSendError;
@@ -78,7 +85,11 @@ namespace gnilk {
         inline kStatus Warn(const std::string& format, T&&... args) {
             if (!(isEnabled && WithinRange(kWarning))) return kStatus::kFiltered;
 
+#if FMT_VERSION >= 110000
+            auto as = fmt::make_format_args(args...);
+#else
             fmt::format_arg_store<fmt::format_context, T...> as{args...};
+#endif
             auto str = fmt::vformat(format, as);
 
             return (SendLogMessage(kWarning, str) > 0) ? kStatus::kOk : kStatus::kSendError;
@@ -87,7 +98,11 @@ namespace gnilk {
         inline kStatus Err(const std::string& format, T&&... args) {
             if (!(isEnabled && WithinRange(kError))) return kStatus::kFiltered;
 
+#if FMT_VERSION >= 110000
+            auto as = fmt::make_format_args(args...);
+#else
             fmt::format_arg_store<fmt::format_context, T...> as{args...};
+#endif
             auto str = fmt::vformat(format, as);
 
             return (SendLogMessage(kError, str) > 0) ? kStatus::kOk : kStatus::kSendError;
@@ -96,7 +111,11 @@ namespace gnilk {
         inline kStatus Crit(const std::string& format, T&&... args) {
             if (!(isEnabled && WithinRange(kCritical))) return kStatus::kFiltered;
 
+#if FMT_VERSION >= 110000
+            auto as = fmt::make_format_args(args...);
+#else
             fmt::format_arg_store<fmt::format_context, T...> as{args...};
+#endif
             auto str = fmt::vformat(format, as);
 
             return (SendLogMessage(kCritical, str) > 0) ? kStatus::kOk : kStatus::kSendError;
