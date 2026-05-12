@@ -101,7 +101,12 @@ target_include_directories(gnklog PUBLIC ${include_dirs})
 target_link_libraries(gnklog options ${libdeps})
 
 # unit test
+
+
 target_include_directories(gnklog_utest PUBLIC ${include_dirs})
+# ok, we had issues on my upgraded mac, this should be implicit but isn't
+# CMake filters it out - but apparently my version of the SDK don't add it..
+target_compile_options(gnklog_utest PRIVATE -I/usr/local/include)
 target_compile_definitions(gnklog_utest PUBLIC -DTRUN_USE_V1)
 #target_link_libraries(gnklog_utest options gnk_log_fmt)
 target_link_libraries(gnklog_utest options ${libdeps})
