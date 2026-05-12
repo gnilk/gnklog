@@ -12,7 +12,9 @@ void LogIPCQueue::Close() {
 }
 
 bool LogIPCQueue::Available() {
-    queue.wait(10);
+    // This wait should not be needed - or it is needed but the empty check is not
+    // WIP: Verifying this..
+    //queue.wait(10);
     return !queue.empty();
 }
 
@@ -25,6 +27,11 @@ int32_t LogIPCQueue::WriteEvent(const LogEvent &event, const std::string &dbgMes
     msg.event = event;
     msg.dbgMessage = dbgMessage;
     queue.push(msg);
+
+    if (onEventWritten != nullptr) {
+        onEventWritten();
+    }
+
     return 1;
 }
 

@@ -105,8 +105,10 @@ namespace gnilk {
         std::vector<LogSinkInstance::Ref> sinks;
 
 
-        bool bQuitSinkThread = false;
+        std::atomic_bool bQuitSinkThread = {false};
         std::thread sinkThread;
+        std::unique_ptr<std::mutex> cvMutex;
+        std::unique_ptr<std::condition_variable> cv;
 
         int eventMsgWritePipe = -1;
         int eventMsgReadPipe = -1;

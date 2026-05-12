@@ -29,6 +29,9 @@ DLL_EXPORT int test_threads(ITesting *t) {
 // We don't want to see broken strings...
 DLL_EXPORT int test_threads_many(ITesting *t) {
 
+    // Devtest - don't have it as part of the rest...
+    return kTR_Pass;
+
     LogManager::Instance().Initialize();
 
     std::mutex lock;

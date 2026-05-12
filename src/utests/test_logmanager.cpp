@@ -25,7 +25,7 @@ DLL_EXPORT int test_logmanager(ITesting *t) {
     LogManager::Instance().Initialize();
     TR_ASSERT(t, Log::kStatus::kOk == logA->Debug("Reopened"));
     LogManager::Instance().Close();
-
+\
 
     int logCounter = 0;
     LogManager::Instance().IterateLogs([&logCounter](const Log::Ref &log) ->bool {
@@ -33,7 +33,8 @@ DLL_EXPORT int test_logmanager(ITesting *t) {
         return true;
     });
     // Log's should still be present!!
-    TR_ASSERT(t, logCounter == 1);
+    // We simply don't know how many tests has been running before us - so don't put an absolute number here
+    TR_ASSERT(t, logCounter > 1);
 
     // This should simply not crash..
     LogManager::Instance().Initialize();

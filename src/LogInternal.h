@@ -11,12 +11,14 @@
 
 #include "LogSink.h"
 #include <memory>
+#include <functional>
 
 namespace gnilk {
 
     class LogIPCBase {
     public:
         using Ref = std::shared_ptr<LogIPCBase>;
+        using OnEventWritten = std::function<void()>;
     public:
         LogIPCBase() = default;
         virtual ~LogIPCBase() = default;
@@ -35,6 +37,8 @@ namespace gnilk {
         //      nok < 0
         virtual int32_t WriteEvent(const LogEvent &event, const std::string &dbgMessage) { return false; }
         virtual int32_t ReadEvent(LogEvent &outEvent) { return false; }
+
+        OnEventWritten onEventWritten={};
     };
 
     template<typename T>

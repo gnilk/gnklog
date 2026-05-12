@@ -41,12 +41,10 @@ namespace gnilk {
 
         bool wait(uint64_t durationMs) {
             std::unique_lock<std::mutex> lock(m);
-            if(q.empty()) {
-                if (c.wait_for(lock, DurationMS(durationMs)) == std::cv_status::timeout) {
-                    return false;
-                }
-            }
-            return true;
+
+            return c.wait_for(lock, DurationMS(durationMs), [&]() {
+                return !q.empty();
+            });
         }
 
         // Get the "front"-element.
