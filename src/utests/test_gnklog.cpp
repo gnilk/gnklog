@@ -18,6 +18,7 @@ extern "C" {
 DLL_EXPORT int test_gnklog(ITesting *t);
 DLL_EXPORT int test_gnklog_exit(ITesting *t);
 DLL_EXPORT int test_gnklog_debug(ITesting *t);
+DLL_EXPORT int test_gnklog_disableall(ITesting *t);
 DLL_EXPORT int test_gnklog_readme(ITesting *t);
 }
 
@@ -61,5 +62,16 @@ DLL_EXPORT int test_gnklog_readme(ITesting *t) {
     logger->Dbg("This is with fmt {}", 4);
     LogManager::Instance().Consume();
 
+    return kTR_Pass;
+}
+
+DLL_EXPORT int test_gnklog_disableall(ITesting *t) {
+    Logger::Initialize();
+    auto logger = Logger::GetLogRef("TestA");
+    TR_ASSERT(t, logger->IsEnabled());
+    Logger::DisableAllLoggers();
+    TR_ASSERT(t, !logger->IsEnabled());
+    auto log2 = Logger::GetLogger("TestB");
+    TR_ASSERT(t, !log2->IsEnabled());
     return kTR_Pass;
 }
