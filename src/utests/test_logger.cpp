@@ -15,7 +15,8 @@ extern "C" {
 DLL_EXPORT int test_logger(ITesting *t);
 DLL_EXPORT int test_logger_exit(ITesting *t);
 DLL_EXPORT int test_logger_msgclasses(ITesting *t);
-DLL_EXPORT int test_logger_enabledisable(ITesting *t);
+DLL_EXPORT int test_logger_disableall(ITesting *t);
+DLL_EXPORT int test_logger_disableenable(ITesting *t);
 DLL_EXPORT int test_logger_enterleave(ITesting *t);
 DLL_EXPORT int test_logger_indent(ITesting *t);
 }
@@ -117,60 +118,30 @@ DLL_EXPORT int test_logger_msgclasses(ITesting *t) {
     return kTR_Pass;
 }
 
-DLL_EXPORT int test_logger_enabledisable(ITesting *t) {
+DLL_EXPORT int test_logger_disableall(ITesting *t) {
 
-    auto logA = Logger::GetLogger("log_A");
-    auto logB = Logger::GetLogger("log_B");
-
-    return kTR_Pass;
-    // This won't work - the sink handling is on a specific thread - we don't know when it hits
-
-    // Both enabled
-    logA->Debug("from log a");
-
-    if (mysink->LastItem().string != std::string("from log a")) {
-        return kTR_Fail;
-    }
-    TR_ASSERT(t, mysink->LastItem().string == std::string("from log a"));
-    logB->Debug("from log b");
-    TR_ASSERT(t, mysink->LastItem().string == std::string("from log b"));
-
-    // disable A
-    Logger::DisableLogger("log_A");
-    TR_ASSERT(t, logA->IsEnabled() == false);
-    // this should not show up..
-    logA->Debug("from log a2");
-
-    TR_ASSERT(t, mysink->LastItem().string != std::string("from log a2"));
-    // but this should...
-    logB->Debug("from log b2");
-    TR_ASSERT(t, mysink->LastItem().string == std::string("from log b2"));
-
-    // also disable B
-    Logger::DisableLogger("log_B");
-    TR_ASSERT(t, logA->IsEnabled() == false);
-    TR_ASSERT(t, logB->IsEnabled() == false);
-
-    logA->Debug("from log a3");
-    TR_ASSERT(t, mysink->LastItem().string != std::string("from log a3"));
-    logB->Debug("from log b3");
-    TR_ASSERT(t, mysink->LastItem().string != std::string("from log b3"));
-    // None of the above should be passed down to the sink - the 'b2' log should still be there..
-    TR_ASSERT(t, mysink->LastItem().string == std::string("from log b2"));
-
-
-    // Re-enable both
-    Logger::EnableAllLoggers();
-    TR_ASSERT(t, logA->IsEnabled() == true);
-    TR_ASSERT(t, logB->IsEnabled() == true);
-
-    logA->Debug("from log a4");
-    TR_ASSERT(t, mysink->LastItem().string == std::string("from log a4"));
-    logB->Debug("from log b4");
-    TR_ASSERT(t, mysink->LastItem().string == std::string("from log b4"));
-
+    auto logA = Logger::GetLogger("LogA");
+    TR_ASSERT(t, logA->IsEnabled());
+    Logger::DisableAllLoggers();
+    auto logB = Logger::GetLogger("LogB");
+    TR_ASSERT(t, !logA->IsEnabled());
+    TR_ASSERT(t, !logB->IsEnabled());
     return kTR_Pass;
 }
+
+DLL_EXPORT int test_logger_disableenable(ITesting *t) {
+
+    auto logA = Logger::GetLogger("LogA");
+    TR_ASSERT(t, logA->IsEnabled());
+    Logger::DisableAllLoggers();
+    Logger::EnableLogger("LogB");;
+    auto logB = Logger::GetLogger("LogB");
+    TR_ASSERT(t, !logA->IsEnabled());
+    TR_ASSERT(t, logB->IsEnabled());
+    return kTR_Pass;
+}
+
+
 
 //
 // this tests the enter/leave functionality
