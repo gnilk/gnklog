@@ -23,7 +23,6 @@ Log::Ref Logger::GetLogRef(const std::string &name) {
     return LogManager::Instance().GetOrAddLog(name);
 }
 
-
 // This is the old interface - not encouraged...
 Logger::ILogger* Logger::GetLogger(const std::string &name) {
     auto instance = GetLogRef(name);
@@ -33,20 +32,20 @@ Logger::ILogger* Logger::GetLogger(const std::string &name) {
     return instance.get();
 }
 
-
 void Logger::DisableLogger(const std::string &name) {
-    auto log = LogManager::Instance().GetExistingLog(name);
+    auto log = LogManager::Instance().GetOrAddLog(name);
     if (log == nullptr) {
         return;
     }
     log->SetEnabled(false);
 }
+
 void Logger::EnableLogger(const std::string &name) {
-    auto log = LogManager::Instance().GetExistingLog(name);
+    auto log = LogManager::Instance().GetOrAddLog(name);
     if (log == nullptr) {
+
         return;
     }
-
     log->SetEnabled(true);
 }
 
