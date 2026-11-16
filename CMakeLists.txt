@@ -91,8 +91,8 @@ endif()
 
 
 if(UNIX)
-    target_compile_options(gnklog PUBLIC -Wall -Wextra -Wshadow -Wpedantic)
-    target_compile_options(gnklog_utest PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter)
+    target_compile_options(gnklog PRIVATE -Wall -Wextra -Wshadow -Wpedantic)
+    target_compile_options(gnklog_utest PRIVATE -Wall -Wextra -Wshadow -Wpedantic -Wno-unused-parameter)
 elseif(WIN32)
     # win32 stuff here...
 endif()
